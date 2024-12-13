@@ -75,8 +75,8 @@ def Registing():
 # 首頁
 @app.route('/')
 def Home():
-    dat = db.GetAllItems()
-    return render_template('index.html',data = dat[:4], list_title="Hot Product")   
+    # dat = db.GetAllItems()
+    return render_template('index.html')   
 
 # 搜尋功能
 @app.route('/search', methods=['POST'])

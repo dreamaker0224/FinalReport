@@ -9,7 +9,7 @@ try:
 		password="",
 		host="localhost",
 		port=3306,
-		database="auction"
+		database="foodpangolin"
 	)
 	#建立執行SQL指令用之cursor, 設定傳回dictionary型態的查詢結果 [{'欄位名':值, ...}, ...]
 	cursor=conn.cursor(dictionary=True)
@@ -25,14 +25,7 @@ def GetList():
 	return cursor.fetchall()
 
 def GetAllItems():
-    sql='''
-    SELECT I.*, 
-       COALESCE(MAX(B.bid_price), 0) AS max_price,
-       (SELECT COUNT(*) FROM bids WHERE item_id = I.item_id) AS bid_count
-    FROM items I 
-    LEFT JOIN bids B ON I.item_id = B.item_id
-    GROUP BY I.item_id;
-    '''
+    sql=""  
     cursor.execute(sql)
     return cursor.fetchall()
 
