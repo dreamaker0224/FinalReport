@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body{
+  overflow-x: hidden;
+  background-color: rgb(242, 242, 242);
+}
+.space {
+  height: 90px;
+  width: 100%;
+}
+.slide-container{
+  margin: auto; 
+  width: 80vw;
+  height: 60vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.slide-container p{
+  font-size: 3vw;
+  font-weight: 600;
+  cursor:default;
+}
+.slide-container img{
+  height: 150%;
+  transform: translateY(100px);
+}

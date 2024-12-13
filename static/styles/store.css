@@ -1,0 +1,56 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+  list-style: none;
+  text-decoration: none;
+}
+.store-section{
+  width: 100%;
+  padding: 90px;
+  background-color: white;
+}
+.store-section h2{
+  padding: 15px;
+  padding-top: 30px;
+  font-size: 2vw;
+  margin: auto;
+  cursor:default;
+}
+.store-section .store-list{
+  max-width: 1380px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+}
+.store-section .store {
+  width: calc( (100% - 3*40px) / 3);
+  border-radius: 22px;
+  margin: 20px;
+  border: 1px rgb(157, 157, 157) solid;
+  cursor: pointer;
+  transition: .3s;
+  overflow: hidden;
+}
+.store-section .store .store-img {
+  height: 250px;
+  overflow: hidden;
+}
+.store-section .store img{
+  width: 100%;
+  object-fit: cover;
+  transition: .3s;
+}
+.store-section .store .store-info{
+  padding: 20px;
+}
+.store-section .store .store-info svg{
+  vertical-align: baseline;
+}
+.store-section .store:hover{
+  img {
+    transform: scale(1.05);
+  }
+}

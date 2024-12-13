@@ -1,0 +1,193 @@
+.navbar {
+  height: 90px;
+  width: 100vw;
+  background-color: rgb(255, 254, 248);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  z-index: 998;
+}
+/* logo */
+.logo {
+  height: 50px;
+  width: 290px;
+  margin: 20px;
+}
+.logo img {
+  width: 50px;
+  height: 100%;
+}
+
+/* search and user */
+.user-and-search {
+  display: flex;
+  margin: 10px 40px;
+  align-items: center;
+}
+.user-and-search .search-box {
+  height: 35px;
+  width: 200px;
+  border: 1px rgb(0, 0, 0) solid;
+  border-radius: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#search-input {
+  width: 160px;
+  outline: none;
+  margin-left: 5px;
+  color: black;
+  background-color: rgb(255, 254, 248);
+  border: none;
+  cursor: text;
+}
+.user-box {
+  width: 35px;
+  height: 35px;
+  margin-left: 20px;
+  border: 3px rgb(0, 0, 0) solid;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: rgb(255, 254, 248);
+  transition: .3s;
+  path{
+    transition: .3s;
+  }
+}
+.user-box:hover {
+  border: 3px rgb(182, 182, 182) solid;
+  path{
+    fill: rgb(182, 182, 182);
+  }
+}
+/* right side user navbar */
+.user-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 20vw;
+  padding: 10vh 5vh;
+  background-color: rgb(119, 93, 18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: .5s; 
+  transform: translateX(20vw);
+}
+.active {
+  transform: translateX(0);
+}
+.user-nav .username{
+  font-size: 2em;
+  font-weight: 600;
+  position: relative;
+  color: white;
+}
+.user-nav .user-nav-dir a{
+  font-size: 1.2em;
+  font-weight: 500;
+  padding: .4em;
+  display: block;
+  width: 8em;
+  text-align: center ;
+  color: rgb(228, 228, 228);
+  border-bottom: 1px rgb(228, 228, 228) solid;
+  transition: .3s;
+  margin: .5em 0;
+}
+.user-nav .user-nav-dir a:hover{
+  color: white;
+  cursor: pointer;
+}
+.user-nav .vip{
+  margin: 0.5em;
+  color: white;
+}
+.user-nav .login-state{
+  margin-bottom: 1.5rem;
+  padding: .6rem 1rem;
+  border-radius: 50px;
+  font-size: .8em;
+  margin-top: 1em;
+  font-weight: 600;
+  color: rgb(0, 34, 9);
+  border: 2px rgb(0,34,9) solid;
+  background-color: rgb(255, 255, 255);
+  text-align: center;
+  transition: .3s;
+  outline: none;
+}
+.user-nav .login-state:hover{
+  background-color: rgb(210, 210, 210);
+  cursor: pointer;
+}
+.user-nav ul{
+  width: 100%;
+}
+.user-nav hr{
+  width: 100%;
+  margin: .4em;
+}
+.user-nav .close{
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  path {
+    transition: .3s;
+  }
+}
+.user-nav .close:hover{
+  cursor: pointer;
+  path{
+    fill: rgb(228, 228, 228);
+  }
+}
+
+/* bottom */
+.bottom {
+  height: 60vh;
+  background-color: white;
+  display: flex;
+}
+.copyright {
+  background-color: rgb(119, 93, 18);
+  color: white;
+  text-align: center;
+  padding: 5px;
+  cursor:default;
+}
+
+.bottom .bottom-left, .bottom-right {
+  color:  black;
+  width: 50%;
+  padding: 40px;
+}
+
+.bottom .bottom-left .bottom-title{
+  font-size: 40px;
+  padding: 10px 0;
+  cursor:default;
+}
+
+.bottom .bottom-left ul li{
+  font-size: 22px;
+  padding: 10px;
+  margin: 10px;
+  transition: .3s;
+  cursor:default;
+}
+.bottom .bottom-left ul li:hover{
+  padding-left: 15px;
+}
+.bottom .bottom-right{
+  text-align: center;
+}
+.bottom .bottom-right img{
+  height: 100%;
+}
