@@ -17,7 +17,7 @@ except mysql.connector.Error as e: # mariadb.Error as e:
 	print(e)
 	print("Error connecting to DB")
 	exit(1)
-	
+
 def GetList():
 	sql="select * from users where 1"
 	#param=('值',...)
@@ -29,7 +29,7 @@ def GetAllItems():
     cursor.execute(sql)
     return cursor.fetchall()
 
-#login to check account and password
+# -------------------------------------------------登入---------------------------------------------------------------------
 def GetLoginInfo(id,pwd):
 	sql="select * from users where user_account=%s and user_password=%s"
 	param=(id,pwd,)
@@ -38,36 +38,22 @@ def GetLoginInfo(id,pwd):
 	if user:
 		return user
 	return None
+# -------------------------------------------------搜尋---------------------------------------------------------------------
 
-#get individual item and render to it's page
-def GetItem(id):
-    sql='''
-    SELECT I.*, U.user_name, 
-       (SELECT COALESCE(MAX(B.bid_price)) FROM bids B WHERE B.item_id = I.item_id) AS max_price
-	FROM items I 
-	JOIN users U ON I.user_id = U.user_id 
-	WHERE I.item_id = %s;
-    '''
-    param = (id,)
-    cursor.execute(sql,param)
-    item = cursor.fetchone()
-    if item:
-        return item
-    return None
-
-# 註冊
+# -------------------------------------------------註冊---------------------------------------------------------------------
 def AddUser(user_name,account,password):
     sql = "INSERT INTO users (user_name,user_account,user_password) VALUES (%s,%s,%s);"
     param = (user_name,account,password,)
     cursor.execute(sql,param)
     conn.commit()
     return
+# -------------------------------------------------註冊---------------------------------------------------------------------
 
-
-# 搜尋
+# -------------------------------------------------搜尋---------------------------------------------------------------------
 def SearchFromDB(search_input):
     sql = "SELECT * FROM items WHERE item_name LIKE %s;"
     param = (f"%{search_input}%",)
     cursor.execute(sql,param)
     items = cursor.fetchall()
     return items
+# -------------------------------------------------搜尋---------------------------------------------------------------------

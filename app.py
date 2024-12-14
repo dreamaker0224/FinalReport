@@ -16,6 +16,8 @@ def AllowedFile(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+# -------------------------------------------------登入功能---------------------------------------------------------------------
 # 登入頁面
 def LoginRequired(f):
     @wraps(f)
@@ -71,7 +73,10 @@ def Registing():
         return redirect("register")
     db.AddUser(user_name,account,password)
     return redirect("/login")
+# -------------------------------------------------登入功能---------------------------------------------------------------------
 
+
+# -------------------------------------------------首頁---------------------------------------------------------------------
 # 首頁
 @app.route('/')
 def Home():
@@ -86,3 +91,4 @@ def Search():
     product = db.SearchFromDB(search_input)
     print(product)
     return render_template('searchpage.html', data=product, list_title="Search")
+# -------------------------------------------------登入功能---------------------------------------------------------------------
