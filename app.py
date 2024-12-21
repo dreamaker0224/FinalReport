@@ -92,7 +92,7 @@ def Search():
     print(product)
     return render_template('searchpage.html', data=product, list_title="Search")
 # -------------------------------------------------首頁---------------------------------------------------------------------
-@app.route("/test")
+@app.route("/testagain")
 def test():
     a = 10
     return a
