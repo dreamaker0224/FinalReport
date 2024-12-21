@@ -95,4 +95,5 @@ def Search():
 @app.route("/test")
 def test():
     a = 10
-    return a
+    b = 10
+    return a,b
