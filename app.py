@@ -95,4 +95,4 @@ def Search():
 @app.route("/test")
 def test():
     data = []
-    return
+    return data
