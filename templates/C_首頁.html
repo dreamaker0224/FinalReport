@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>歡迎</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-size: 17px;
+            font-family: 標楷體;
+            background-image: linear-gradient(to bottom, #189ab4 9%, #75e6da 70%, #ffffff);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h1 + p {
+            text-align: center;
+        }
+
+        #container {
+            background-color: #d4f1f4;
+            width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #merchant-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #merchant-block img {
+            width: 150px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #merchant-details {
+            flex: 1;
+            margin-left: 20px;
+        }
+
+        #merchant-details h2 {
+            margin: 0 0 10px;
+            color: #189ab4;
+        }
+
+        #merchant-details p {
+            margin: 0 0 15px;
+            color: #555;
+        }
+
+        #merchant-details a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #189ab4;
+            color: white;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        #merchant-details a:hover {
+            background-color: #005f73;
+        }
+
+        #logout-button {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #logout-button a {
+            text-decoration: none;
+            padding: 10px 25px;
+            background-color: #ff6b6b;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: inline-block;
+        }
+
+        #logout-button a:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>歡迎來到 foodpangolin!</h1>
+        <hr/>
+        {% if name %}
+            <p style="text-align: center;">歡迎 {{ name }} 來到 foodpangolin! {{ customer_id }}</p>
+            <div id="merchant-block">
+                <img src="/img/01.png" alt="好好吃" title="好好吃">
+                <div id="merchant-details">
+                    <h2>好好吃</h2>
+                    <p>美味佳餚，立即訂購。</p>
+                    <a href="/C_商家菜單?store_name=好好吃">查看菜單</a>
+                </div>
+            </div>
+            <div id="logout-button">
+                <a href="/logout">登出</a>
+            </div>
+        {% else %}
+            <p>請先登入才能開始操作</p>
+            <p id="button"><a href="/C_登入畫面.html"><button>前往登入頁面</button></a></p>
+        {% endif %}
+    </div>
+</body>
+</html>

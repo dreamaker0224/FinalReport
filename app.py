@@ -96,3 +96,61 @@ def Search():
 def test():
     a = 10
     return a
+
+# -------------------------------------------------顧客---------------------------------------------------------------------    
+@app.route('/C_商家菜單', methods=['GET'])
+def Cg1():
+    store_name = request.args.get('store_name')
+    result = db.CGetStoreId(store_name)
+    store_id = result['store_id']
+    session['store_id'] = store_id
+    main = db.CGetList()
+    snacks =db.CGetList3()
+    drinks =db.CGetList4()
+    data =db.CGetList5()
+    return render_template('/C_商家菜單.html', main=main, snacks=snacks, drinks=drinks, data=data,store_id=store_id)
+@app.route('/C_訂單確認', methods=['POST'])
+def COrderConfirmation():
+    items = request.form
+    customer_id = session.get('customer_id')
+    store_id = session.get('store_id')
+    created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 訂單建立時間
+   
+    # 先新增訂單到 orders 表
+    db.CAddToList2(customer_id, created_at, store_id)
+
+    # 獲取顧客最新的訂單 ID
+    order_id =db.CGetLatestOrderId(customer_id)
+    
+    # 處理訂單的每一項商品
+    order_details = {item: int(quantity) for item, quantity in items.items() if item.startswith('item_')}
+    for item_id, quantity in order_details.items():
+        item_id = item_id.replace('item_', '')
+        price = db.CGetItemPrice(item_id)  # 假設有函數取得商品價格
+        db.CAddOrderItem(order_id, item_id, quantity, price)  # 將商品加入 order_items 表
+
+    # 計算訂單總金額
+    total_amount =db.CCalculateTotalAmount(order_id)
+
+    # 傳遞訂單數據和總金額
+    data =db.CGetList6(order_id)
+    return render_template('C_訂單確認.html', order_details=order_details, data=data, total_amount=total_amount)
+
+@app.route("/C_payaddress")
+def Cg5():
+    customer_id = session.get('customer_id')
+    order_id =db.CGetLatestOrderId(customer_id)
+    total_amount = db.CCalculateTotalAmount(order_id)
+    db.CUpdateToList(total_amount,order_id)
+    address=db.CAddress(customer_id)
+    return render_template('/C_確認付款方式.html',total_amount=total_amount,address=address)
+
+@app.route("/C_delete")
+def Cdelete():
+    customer_id = session.get('customer_id')
+    order_id =db.CGetLatestOrderId(customer_id)
+    db.CDelete2(order_id)
+    db.CDelete(order_id)
+    return redirect('/')  
+# -------------------------------------------------顧客---------------------------------------------------------------------    
+    

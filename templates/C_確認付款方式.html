@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>確認付款方式以及地址</title>
+    <style type="text/css">
+        html, body {
+            height: 100%; /* 讓背景漸層覆蓋整個螢幕 */
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-size: 17px;
+            font-family: 標楷體;
+            background-image: linear-gradient(to bottom, #189ab4 9%, #75e6da 70%, #ffffff); /* 背景漸層 */
+        }
+        h1 {
+            text-align: center;
+        }
+        h1 + p {
+            text-align: center;
+        }
+        #container {
+            background-color: #d4f1f4;
+            width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #form-section {
+            margin: 20px 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input[type="text"], input[type="submit"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #189ab4;
+        }
+        #button {
+            text-align: center;
+        }
+        #button input {
+            background-color: #189ab4;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            padding: 10px 20px;
+            transition: background-color 0.3s;
+        }
+        #button input:hover {
+            background-color: #75e6da;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>確認付款方式以及地址</h1>
+        <hr/>
+        <form id="form-section">
+            <!-- 支付方式 -->
+            <div class="form-group">
+				<h3>總金額：${{ total_amount }}</h3>
+                <label for="payment">選擇付款方式:</label>
+                <select id="payment" name="payment">
+                    <option value="cash">現金付款</option>
+                    <option value="online">線上支付</option>
+                    <option value="credit_card">信用卡支付</option>
+                </select>
+            </div>
+
+            <!-- 地址輸入 -->
+			{% for address in address %}
+            <div class="form-group">
+                <label for="address">填寫地址:</label>
+                <input type="text" id="address" name="address" value="{{address.address}}" placeholder="請輸入詳細地址">
+            </div>
+			{% endfor %}
+            <!-- 提交按鈕 -->
+            <div id="button">
+                <input type="submit" value="確認提交">
+				<a href="/C_delete" class="btn">取消訂單</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

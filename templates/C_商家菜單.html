@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>顧客菜單</title>
+<style type="text/css">
+body {
+  font-size: 17px;
+  font-family: 標楷體;
+  background-color: #FFE153;
+  margin: 0; /* 去除預設邊距 */
+}
+h1 {
+  text-align: center;
+  margin: 0; /* 緊貼頂部 */
+  padding: 10px;
+}
+#header {
+  position: sticky; /* 讓 header 在滑動時固定 */
+  top: 0;
+  z-index: 1000;
+}
+#menu {
+  margin: 10px auto;
+  text-align: center;
+}
+#container {
+  background-color: white;
+  width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  position: relative;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.menu-section {
+  background-color: #FFF;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 700px;
+  border: 1px solid gray; /* 加上灰色邊框 */
+}
+.menu-section h2 {
+  text-align: center;
+}
+table {
+  margin: 0 auto;
+  text-align: center;
+  border-collapse: collapse;
+}
+button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #FFE153;
+  cursor: pointer;
+  border-radius: 5px;
+}
+button:hover {
+  background-color: #FFD700;
+}
+</style>
+<script type="text/javascript">
+const quantities = {};
+
+// 更新數量顯示
+function updateNumber(button) {
+  const itemId = button.getAttribute("data-id");
+  const display = document.querySelector(`span[data-id="${itemId}"]`);
+  display.textContent = quantities[itemId] || 0;
+}
+
+// 減少數量
+function decrease(button) {
+  const itemId = button.getAttribute("data-id");
+  if (!quantities[itemId]) quantities[itemId] = 0;
+  if (quantities[itemId] > 0) quantities[itemId]--;
+  updateNumber(button);
+}
+
+// 增加數量
+function increase(button) {
+  const itemId = button.getAttribute("data-id");
+  if (!quantities[itemId]) quantities[itemId] = 0;
+  quantities[itemId]++;
+  updateNumber(button);
+}
+
+// 提交訂單
+function submitOrder() {
+  // 創建一個表單並將數量放入
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/C_訂單確認';  // 提交到訂單確認頁面
+
+  // 遍歷所有菜品的數量並創建隱藏的輸入框
+  for (const itemId in quantities) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = `item_${itemId}`;
+    input.value = quantities[itemId];
+    form.appendChild(input);
+  }
+
+  document.body.appendChild(form);
+  form.submit();  // 提交表單
+}
+</script>
+</head>
+<body>
+
+
+<div id="container">
+<h1>菜單</h1>
+<div id="header">
+  
+  <div id="menu">
+    <a href="#main" style="text-decoration: none;">主菜</a> |
+    <a href="#snacks" style="text-decoration: none;">小點</a> |
+    <a href="#drinks" style="text-decoration: none;">飲料</a>
+  </div>
+</div>
+<!-- 主菜區域 -->
+<div class="menu-section" id="main">
+  <h2>主菜</h2>
+  <table border="1" width="100%">
+    {% for item in main %}
+    <tr>
+      <td>{{ item.item_name }}</td>
+      <td>{{ item.price }}$</td>
+      <td>
+        <div class="container">
+          <button onclick="decrease(this)" data-id="{{ item.item_id }}">-</button>
+          <span class="number" data-id="{{ item.item_id }}">0</span>
+          <button onclick="increase(this)" data-id="{{ item.item_id }}">+</button>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<!-- 小點區域 -->
+<div class="menu-section" id="snacks">
+  <h2>小點</h2>
+  <table border="1" width="100%">
+    {% for item in snacks %}
+    <tr>
+      <td>{{ item.item_name }}</td>
+      <td>{{ item.price }}$</td>
+      <td>
+        <div class="container">
+          <button onclick="decrease(this)" data-id="{{ item.item_id }}">-</button>
+          <span class="number" data-id="{{ item.item_id }}">0</span>
+          <button onclick="increase(this)" data-id="{{ item.item_id }}">+</button>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<!-- 飲料區域 -->
+<div class="menu-section" id="drinks">
+  <h2>飲料</h2>
+  <table border="1" width="100%">
+    {% for item in drinks %}
+    <tr>
+      <td>{{ item.item_name }}</td>
+      <td>{{ item.price }}$</td>
+      <td>
+        <div class="container">
+          <button onclick="decrease(this)" data-id="{{ item.item_id }}">-</button>
+          <span class="number" data-id="{{ item.item_id }}">0</span>
+          <button onclick="increase(this)" data-id="{{ item.item_id }}">+</button>
+        </div>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<p style="text-align: center;">
+  <button onclick="submitOrder()">確認訂單</button>
+</p>
+</div>
+<p style="text-align: center;">
+  <a href="/" style="text-decoration: none;"><button>回到主頁</button></a>
+  <a href="/logout" style="text-decoration: none;"><button>登出</button></a>
+</p>
+</body>
+</html>
