@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增菜品</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="add-item-container">
+        <h2>新增菜品</h2>
+        <form action="/store_add_item" method="POST">
+            <label for="item_name">菜品名稱</label>
+            <input type="text" id="item_name" name="item_name" required>
+            
+            <label for="price">價格</label>
+            <input type="text" id="price" name="price" required>
+            
+            <label for="description">描述</label>
+            <textarea id="description" name="description" required></textarea>
+            
+            <button type="submit">新增菜品</button>
+        </form>
+        <a href="/store_menu">回到菜單管理</a>
+    </div>
+</body>
+</html>

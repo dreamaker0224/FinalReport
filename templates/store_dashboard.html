@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家儀表板</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h2>{{ store_name }} 店家儀表板</h2>
+        <p>歡迎來到你的儀表板</p>
+        
+        <h3>訂單管理</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>訂單ID</th>
+                    <th>顧客ID</th>
+                    <th>訂單時間</th>
+                    <th>總金額</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.customer_id }}</td>
+                    <td>{{ order.created_at }}</td>
+                    <td>{{ order.total_price }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>
+                        <a href="/store_order_details/{{ order.order_id }}">查看</a> |
+                        <a href="/store_update_order_status/{{ order.order_id }}" onclick="return confirm('確認更新狀態？')">更新狀態</a> |
+                        <a href="/store_delete_order/{{ order.order_id }}" onclick="return confirm('確認刪除訂單？')">刪除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <a href="/store_menu">管理菜單</a> | 
+        <a href="/store_update_info">更新店家資訊</a> | 
+        <form action="/store_logout" method="POST" style="display:inline;">
+            <button type="submit">登出</button>
+        </form>
+    </div>
+</body>
+</html>

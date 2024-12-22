@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>訂單詳情</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="order-details-container">
+        <h2>訂單詳情 - 訂單 ID: {{ order_id }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>菜品名稱</th>
+                    <th>數量</th>
+                    <th>單價</th>
+                    <th>總價</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.item_name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.quantity * item.price }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p>總金額: {{ total_amount }}</p>
+        <form action="/store_update_order_status/{{ order_id }}" method="POST">
+            <label for="status">訂單狀態</label>
+            <select name="status" id="status">
+                <option value="Pending">待處理</option>
+                <option value="In Progress">製作中</option>
+                <option value="Completed">完成</option>
+            </select>
+            <button type="submit">更新狀態</button>
+        </form>
+        <a href="/store_dashboard">回到儀表板</a>
+    </div>
+</body>
+</html>

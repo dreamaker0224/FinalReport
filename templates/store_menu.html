@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜單管理</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="menu-container">
+        <h2>菜單管理</h2>
+        <a href="/store_add_item" class="btn">新增菜品</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>菜品名稱</th>
+                    <th>價格</th>
+                    <th>描述</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.item_name }}</td>
+                    <td>{{ item.price }}</td>
+                    <td>{{ item.description }}</td>
+                    <td>
+                        <a href="/store_update_item/{{ item.item_id }}">編輯</a> | 
+                        <a href="/store_delete_item/{{ item.item_id }}" onclick="return confirm('確認刪除此菜品？')">刪除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
