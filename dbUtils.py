@@ -169,4 +169,93 @@ def DeleteUnpaidOrders(customer_id):
         # 提交刪除操作
         conn.commit()   
 # -------------------------------------------------顧客---------------------------------------------------------------------
-    
+# -------------------------------------------------店家---------------------------------------------------------------------
+# Get store info by account and password
+def GetStoreInfoByAccount(acc, pwd):
+    sql = "SELECT * FROM stores WHERE account = %s AND password = %s;"
+    cursor.execute(sql, (acc, pwd))
+    return cursor.fetchone()
+
+# Get store info by store ID
+def GetStoreInfo(store_id):
+    sql = "SELECT * FROM stores WHERE store_id = %s;"
+    cursor.execute(sql, (store_id,))
+    return cursor.fetchone()
+
+# Get store menu items
+def GetMenuItemsByStore(store_id):
+    sql = "SELECT item_id, item_name, price, description FROM menu_items WHERE store_id = %s;"
+    cursor.execute(sql, (store_id,))
+    return cursor.fetchall()
+
+# Get menu item by ID
+def GetMenuItemById(item_id):
+    sql = "SELECT item_id, item_name, price, description FROM menu_items WHERE item_id = %s;"
+    cursor.execute(sql, (item_id,))
+    return cursor.fetchone()
+
+# Add a new menu item
+def AddMenuItem(store_id, item_name, price, description):
+    sql = "INSERT INTO menu_items (store_id, item_name, price, description) VALUES (%s, %s, %s, %s);"
+    cursor.execute(sql, (store_id, item_name, price, description))
+    conn.commit()
+
+# Update a menu item
+def UpdateMenuItem(item_id, item_name, price, description):
+    sql = "UPDATE menu_items SET item_name = %s, price = %s, description = %s WHERE item_id = %s;"
+    cursor.execute(sql, (item_name, price, description, item_id))
+    conn.commit()
+
+# Delete a menu item
+def DeleteMenuItem(item_id):
+    sql = "DELETE FROM menu_items WHERE item_id = %s;"
+    cursor.execute(sql, (item_id,))
+    conn.commit()
+
+# -------------------------------------------------訂單---------------------------------------------------------------------
+# Get all orders for a store
+def GetOrdersByStore(store_id):
+    sql = "SELECT order_id, customer_id, created_at, total_price, status FROM orders WHERE store_id = %s;"
+    cursor.execute(sql, (store_id,))
+    return cursor.fetchall()
+
+# Get order items by order ID
+def GetOrderItems(order_id):
+    sql = "SELECT oi.order_item_id, oi.item_id, oi.quantity, oi.price, mi.item_name FROM order_items oi JOIN menu_items mi ON oi.item_id = mi.item_id WHERE oi.order_id = %s;"
+    cursor.execute(sql, (order_id,))
+    return cursor.fetchall()
+
+# Calculate the total amount for an order
+def CalculateOrderTotal(order_id):
+    sql = "SELECT SUM(quantity * price) AS total_amount FROM order_items WHERE order_id = %s;"
+    cursor.execute(sql, (order_id,))
+    result = cursor.fetchone()
+    return result['total_amount'] if result else 0
+
+# Update order status
+def UpdateOrderStatus(order_id, status):
+    sql = "UPDATE orders SET status = %s WHERE order_id = %s;"
+    cursor.execute(sql, (status, order_id))
+    conn.commit()
+
+# Delete an order
+def DeleteOrder(order_id):
+    sql = "DELETE FROM orders WHERE order_id = %s;"
+    cursor.execute(sql, (order_id,))
+    conn.commit()
+
+# -------------------------------------------------報表---------------------------------------------------------------------
+# Get monthly sales report
+def GetMonthlySalesReport(store_id, year, month):
+    sql = """SELECT SUM(o.total_price) AS total_sales FROM orders o 
+            WHERE o.store_id = %s AND YEAR(o.created_at) = %s AND MONTH(o.created_at) = %s"""
+    cursor.execute(sql, (store_id, year, month))
+    result = cursor.fetchone()
+    return result['total_sales'] if result else 0
+
+# -------------------------------------------------更新店家信息---------------------------------------------------------------------
+def UpdateStoreInfo(store_id, store_name, store_address, store_phone):
+    sql = """UPDATE stores SET store_name = %s, store_address = %s, store_phone = %s WHERE store_id = %s"""
+    cursor.execute(sql, (store_name, store_address, store_phone, store_id))
+    conn.commit()
+
