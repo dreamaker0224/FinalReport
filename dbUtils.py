@@ -97,7 +97,7 @@ def CGetList4():# 查詢飲料
 	cursor.execute(sql)
 	return cursor.fetchall() 
 def CGetList6(order_id):# 查詢order_items
-    sql = "SELECT order_item_id,order_id,item_id,quantity,price from order_items where order_id=%s;"
+    sql = "SELECT order_items.quantity, order_items.price, menu_items.item_name FROM order_items JOIN menu_items ON order_items.item_id = menu_items.item_id WHERE order_items.order_id = %s;"
     cursor.execute(sql,(order_id,))
     return cursor.fetchall()
 def CAddOrderItem(order_id, item_id, quantity, price):
@@ -108,17 +108,17 @@ def CGetItemPrice(item_id):#根據商品 ID 獲取價格。
     sql = "SELECT price FROM menu_items WHERE item_id = %s"
     cursor.execute(sql, (item_id,))
     result = cursor.fetchone()
-    return result['price'] if result else 0        
+    return result['price']        
 def CAddToList2(customer_id,created_at, store_id):#建立order
     sql = "INSERT INTO orders (customer_id,created_at, store_id) VALUES (%s, %s, %s)"
     cursor.execute(sql, (customer_id,created_at,store_id,))
     conn.commit()
     return
-def CGetLatestOrderId(customer_id):#獲取最新建立的訂單 ID。
-    sql = "SELECT MAX(order_id) AS order_id FROM orders where customer_id=%s"
+def CGetLatestOrderId(customer_id):
+    sql = "SELECT MAX(order_id) AS order_id FROM orders WHERE customer_id = %s"
     cursor.execute(sql, (customer_id,))
-    result = cursor.fetchone()
-    return result['order_id'] if result else None  
+    result = cursor.fetchone()  # 確保結果被完全讀取
+    return result['order_id'] if result else None
     
 def CCalculateTotalAmount(order_id):
     sql = "SELECT SUM(quantity * price) AS total_amount FROM order_items WHERE order_id = %s"
@@ -136,7 +136,7 @@ def CUpdateToList(total_amount,order_id):#更新訂單價格
 	return
         
 def CDelete(order_id): # 
-	sql="delete from orders where total_price=0 or order_id=%s"
+	sql="delete from orders where order_id=%s"
 	cursor.execute(sql,(order_id,))
 	conn.commit()
 	return
@@ -146,5 +146,27 @@ def CDelete2(order_id):
 	cursor.execute(sql,(order_id,))
 	conn.commit()
 	return 
+    
+def DeleteUnpaidOrders(customer_id):
+    # 查詢所有 total_price = 0 的未付款訂單
+    sql = "SELECT order_id FROM orders WHERE customer_id = %s AND total_price = 0"
+    cursor.execute(sql, (customer_id,))
+    unpaid_orders = cursor.fetchall()
+
+    # 如果存在未付款的訂單，進行刪除操作
+    if unpaid_orders:
+        for order in unpaid_orders:
+            order_id = order['order_id']
+
+            # 刪除 order_items 表中對應的記錄
+            sql_delete_items = "DELETE FROM order_items WHERE order_id = %s"
+            cursor.execute(sql_delete_items, (order_id,))
+
+            # 刪除 orders 表中對應的記錄
+            sql_delete_order = "DELETE FROM orders WHERE order_id = %s"
+            cursor.execute(sql_delete_order, (order_id,))
+
+        # 提交刪除操作
+        conn.commit()   
 # -------------------------------------------------顧客---------------------------------------------------------------------
     

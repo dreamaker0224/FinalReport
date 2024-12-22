@@ -89,6 +89,14 @@ function increase(button) {
 
 // 提交訂單
 function submitOrder() {
+  // 檢查是否選擇了任何菜品
+  const selectedItems = Object.values(quantities).some(quantity => quantity > 0);
+  
+  if (!selectedItems) {
+    alert("您尚未選擇任何餐點，請先選擇餐點再確認訂單！");
+    return;  // 阻止表單提交
+  }
+
   // 創建一個表單並將數量放入
   const form = document.createElement('form');
   form.method = 'POST';
@@ -107,6 +115,7 @@ function submitOrder() {
   form.submit();  // 提交表單
 }
 </script>
+
 </head>
 <body>
 
@@ -114,7 +123,7 @@ function submitOrder() {
 <div id="container">
 <h1>菜單</h1>
 <div id="header">
-  
+	{{price}}
   <div id="menu">
     <a href="#main" style="text-decoration: none;">主菜</a> |
     <a href="#snacks" style="text-decoration: none;">小點</a> |

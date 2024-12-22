@@ -52,10 +52,10 @@
             outline: none;
             border-color: #189ab4;
         }
-        #button {
+        button {
             text-align: center;
         }
-        #button input {
+        button {
             background-color: #189ab4;
             color: #fff;
             cursor: pointer;
@@ -63,7 +63,7 @@
             padding: 10px 20px;
             transition: background-color 0.3s;
         }
-        #button input:hover {
+        button:hover {
             background-color: #75e6da;
         }
     </style>
@@ -72,10 +72,10 @@
     <div id="container">
         <h1>確認付款方式以及地址</h1>
         <hr/>
-        <form id="form-section">
+        <form id="form-section" method="POST" action="/C_payaddress" onsubmit="return confirmPayment()">
             <!-- 支付方式 -->
             <div class="form-group">
-				<h3>總金額：${{ total_amount }}</h3>
+                <h3>總金額：${{ total_amount }}</h3>
                 <label for="payment">選擇付款方式:</label>
                 <select id="payment" name="payment">
                     <option value="cash">現金付款</option>
@@ -85,18 +85,27 @@
             </div>
 
             <!-- 地址輸入 -->
-			{% for address in address %}
+            {% for addr in address %}
             <div class="form-group">
                 <label for="address">填寫地址:</label>
-                <input type="text" id="address" name="address" value="{{address.address}}" placeholder="請輸入詳細地址">
+                <input type="text" id="address" name="address" value="{{ addr.address }}" placeholder="請輸入詳細地址">
             </div>
-			{% endfor %}
+            {% endfor %}
+
             <!-- 提交按鈕 -->
             <div id="button">
-                <input type="submit" value="確認提交">
-				<a href="/C_delete" class="btn">取消訂單</a>
+                <a href="/" class="btn">返回首頁</a>
+                <button type="submit" class="btn">確認點餐</button>
+                <a href="/C_delete" class="btn">取消訂單</a>
             </div>
         </form>
     </div>
+
+    <script>
+        function confirmPayment() {
+            alert("餐點正在製作中，請稍候！");
+            return true; // 确保表单提交
+        }
+    </script>
 </body>
 </html>

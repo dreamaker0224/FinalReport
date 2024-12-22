@@ -81,7 +81,13 @@ def Registing():
 @app.route('/')
 def Home():
     # dat = db.GetAllItems()
-    return render_template('index.html')   
+    # -------------------------------------------------顧客---------------------------------------------------------------------   
+    name = session.get('name')
+    customer_id = session.get('customer_id')
+    order_id =db.CGetLatestOrderId(customer_id)
+    db.DeleteUnpaidOrders(customer_id)
+# -------------------------------------------------顧客---------------------------------------------------------------------   
+    return render_template('index.html', name=name,customer_id=customer_id)   
 
 # 搜尋功能
 @app.route('/search', methods=['POST'])
@@ -109,6 +115,7 @@ def Cg1():
     drinks =db.CGetList4()
     data =db.CGetList5()
     return render_template('/C_商家菜單.html', main=main, snacks=snacks, drinks=drinks, data=data,store_id=store_id)
+
 @app.route('/C_訂單確認', methods=['POST'])
 def COrderConfirmation():
     items = request.form
@@ -136,14 +143,28 @@ def COrderConfirmation():
     data =db.CGetList6(order_id)
     return render_template('C_訂單確認.html', order_details=order_details, data=data, total_amount=total_amount)
 
-@app.route("/C_payaddress")
+@app.route("/C_payaddress", methods=["GET", "POST"])
 def Cg5():
     customer_id = session.get('customer_id')
-    order_id =db.CGetLatestOrderId(customer_id)
-    total_amount = db.CCalculateTotalAmount(order_id)
-    db.CUpdateToList(total_amount,order_id)
-    address=db.CAddress(customer_id)
-    return render_template('/C_確認付款方式.html',total_amount=total_amount,address=address)
+    order_id = db.CGetLatestOrderId(customer_id)
+
+    if request.method == "POST":
+        # 獲取總金額並更新到 orders 表
+        total_amount = db.CCalculateTotalAmount(order_id)
+        db.CUpdateToList(total_amount, order_id)
+
+        # 獲取地址（可以從 POST 資料中取得）
+        address = request.form.get("address")
+
+        # 這裡可以根據需求更新地址或進一步處理
+        return redirect("/")  # 確認付款後跳轉回首頁
+
+    else:
+        # 獲取總金額及地址資料
+        total_amount = db.CCalculateTotalAmount(order_id)
+        address = db.CAddress(customer_id)
+        return render_template('/C_確認付款方式.html', total_amount=total_amount, address=address)
+
 
 @app.route("/C_delete")
 def Cdelete():
@@ -151,6 +172,6 @@ def Cdelete():
     order_id =db.CGetLatestOrderId(customer_id)
     db.CDelete2(order_id)
     db.CDelete(order_id)
-    return redirect('/')  
+    return redirect('/')
 # -------------------------------------------------顧客---------------------------------------------------------------------    
     

@@ -78,8 +78,7 @@
     <table>
         <thead>
             <tr>
-                <th>訂單編號</th>
-                <th>菜品編號</th>
+                <th>名稱</th>
                 <th>數量</th>
                 <th>價格</th>
             </tr>
@@ -87,8 +86,7 @@
         <tbody>
             {% for item in data %}
             <tr>
-                <td>{{ item.order_id }}</td>
-                <td>{{ item.item_id }}</td>
+                <td>{{ item.item_name }}</td>
                 <td>{{ item.quantity}}</td>
                 <td>${{ item.price }}</td>
             </tr>
@@ -98,7 +96,7 @@
     <h3>總金額：${{total_amount }}</h3>
     <div class="footer">
         <a href="/" class="btn">返回首頁</a>
-        <a href="/C_payaddress" class="btn">確認付款</a>
+        <a href="/C_payaddress" class="btn">確認地址以及付款方式</a>
 		<a href="/C_delete" class="btn">取消訂單</a>
     </div>
 </div>
