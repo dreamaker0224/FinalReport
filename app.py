@@ -174,4 +174,151 @@ def Cdelete():
     db.CDelete(order_id)
     return redirect('/')
 # -------------------------------------------------顧客---------------------------------------------------------------------    
+# -------------------------------------------------店家登入功能---------------------------------------------------------------------
+def LoginRequired(f):
+    @wraps(f)
+    def Wrapper(*args, **kwargs):
+        S_id = session.get('S_id')
+        if not S_id:
+            return redirect('/S_login')
+        return f(*args, **kwargs)
+    return Wrapper
+
+# Store login page
+@app.route("/S_Login")
+def SLogin():
+    return render_template('store_login.html')
+
+# Store account validation
+@app.route('/S_Check', methods=['POST'])
+def SCheck():
+    form = request.form
+    acc = form['ACC']
+    pwd = form['PWD']
+    S_info = db.SGetInfoByAccount(acc, pwd)
+    if S_info:
+        session['S_id'] = S_info['store_id']
+        session['S_name'] = S_info['store_name']
+        return redirect('/store_dashboard')
+    else:
+        flash('Your account or password is incorrect.')
+        return redirect("/store_login")
+
+# Store logout
+@app.route('/S_Logout', methods=['POST'])
+def SLogout():
+    session['S_id'] = None
+    return redirect('/')
+
+# -------------------------------------------------店家首頁---------------------------------------------------------------------
+# Store dashboard page
+@app.route('/S_Dashboard')
+@login_required
+def SDashboard():
+    S_id = session.get('store_id')
+    orders = db.GetOrdersByStore(S_id)
+    return render_template('store_dashboard.html', orders=orders)
+
+# -------------------------------------------------菜單管理---------------------------------------------------------------------
+# Store menu page
+@app.route('/S_Menu', methods=['GET'])
+@login_required
+def SMenu():
+    S_id = session.get('S_id')
+    items = db.GetMenuItemsByStore(S_id)
+    return render_template('store_menu.html', items=items)
+
+# Add menu item
+@app.route('/S_Add_Item', methods=['POST'])
+@login_required
+def SAddItem():
+    S_id = session.get('store_id')
+    form = request.form
+    item_name = form['item_name']
+    price = form['price']
+    description = form['description']
+    db.AddMenuItem(S_id, item_name, price, description)
+    flash('Item added successfully!')
+    return redirect('/store_menu')
+
+# Update menu item
+@app.route('/S_Update_Item/<int:item_id>', methods=['GET', 'POST'])
+@login_required
+def SUpdateItem(item_id):
+    if request.method == 'POST':
+        form = request.form
+        item_name = form['item_name']
+        price = form['price']
+        description = form['description']
+        db.UpdateMenuItem(item_id, item_name, price, description)
+        flash('Item updated successfully!')
+        return redirect('/store_menu')
+    item = db.GetMenuItemById(item_id)
+    return render_template('store_update_item.html', item=item)
+
+# Delete menu item
+@app.route('/S_Delete_Item/<int:item_id>', methods=['GET'])
+@login_required
+def SDeleteItem(item_id):
+    db.DeleteMenuItem(item_id)
+    flash('Item deleted successfully!')
+    return redirect('/store_menu')
+
+# -------------------------------------------------訂單管理---------------------------------------------------------------------
+# Order details
+@app.route('/Store_Order_Details/<int:order_id>', methods=['GET'])
+@login_required
+def SOrderDetails(order_id):
+    items = db.GetOrderItems(order_id)
+    total_amount = db.CalculateOrderTotal(order_id)
+    return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id)
+
+# Update order status
+@app.route('/S_Update_Order_status/<int:order_id>', methods=['POST'])
+@login_required
+def SUpdateOrderStatus(order_id):
+    status = request.form['status']
+    db.UpdateOrderStatus(order_id, status)
+    flash('Order status updated successfully!')
+    return redirect('/store_dashboard')
+
+# -------------------------------------------------店家報表---------------------------------------------------------------------
+# Sales report for current month
+@app.route('/S_Sales_Report', methods=['GET'])
+@login_required
+def SSalesReport():
+    store_id = session.get('store_id')
+    year = datetime.now().year
+    month = datetime.now().month
+    total_sales = db.GetMonthlySalesReport(store_id, year, month)
+    return render_template('store_sales_report.html', total_sales=total_sales, year=year, month=month)
+
+# -------------------------------------------------店家管理---------------------------------------------------------------------
+# Update store info
+@app.route('/S_Update_Info', methods=['GET', 'POST'])
+@login_required
+def SUpdateInfo():
+    S_id = session.get('store_id')
+    S_info = db.GetStoreInfo(store_id)
     
+    if request.method == 'POST':
+        S_name = request.form['store_name']
+        S_address = request.form['store_address']
+        S_phone = request.form['store_phone']
+        db.UpdateStoreInfo(store_id, S_name, S_address, S_phone)
+        flash('S information updated successfully!')
+        return redirect('/S_dashboard')
+    
+    return render_template('S_update_info.html', S_info=S_info)
+
+# -------------------------------------------------店家刪除訂單---------------------------------------------------------------------
+# Delete order
+@app.route('/S_Delete_Order/<int:order_id>', methods=['GET'])
+@login_required
+def SDeleteOrder(order_id):
+    db.DeleteOrder(order_id)
+    flash('Order deleted successfully!')
+    return redirect('/S_dashboard')
+
+if __name__ == '__main__':
+    app.run(debug=True)
