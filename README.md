@@ -80,14 +80,6 @@ erDiagram
         TEXT comment
         DATETIME created_at
     }
-    TRANSACTIONS {
-        INT transaction_id PK
-        INT order_id FK
-        DECIMAL store_amount
-        DECIMAL delivery_amount
-        DECIMAL customer_amount
-        DATETIME created_at
-    }
 
     USERS ||--o{ CUSTOMERS : ""
     USERS ||--o{ STORES : ""
@@ -99,7 +91,6 @@ erDiagram
     ORDERS ||--o{ ORDER_ITEMS : ""
     MENU_ITEMS ||--o{ ORDER_ITEMS : ""
     ORDERS ||--o{ FEEBACK : ""
-    ORDERS ||--o{ TRANSACTIONS : ""
 
 ```
 
