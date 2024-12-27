@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/admin.css') }}" />
+    <title>FoodPangolin Admin</title>
+  </head>
+  <body>
+    {% include "navbar.html" %}
+    <section class="money-flow">
+        <h1>商家管理</h1>
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>商家名稱</th>
+                    <th>營業額</th>
+                    <th>應收帳款</th>
+                    <th>平台收入</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                </tr>
+                <tr>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                </tr>
+                <tr>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                    <td>123</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    {% include "bottom.html" %}
+  </body>
+</html>

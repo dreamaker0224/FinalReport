@@ -8,6 +8,9 @@
   position: fixed;
   z-index: 998;
 }
+.space {
+  height: 90px;
+}
 /* logo */
 .logo {
   height: 50px;
