@@ -10,18 +10,28 @@
 .money-flow .main-table{
     margin: auto;
     width: 800px;
+    border-collapse: collapse;
+    margin-bottom: 30px;
 }
 .money-flow .main-table th{
+    width: 200px;
     text-align: center;
     padding: 10px;
     background-color: antiquewhite;
+    border: 1px solid rgb(252, 221, 181);
+
 }
 .money-flow .main-table td{
     padding: 10px 20px;
+    width: 200px;
     text-align: right;
+    border: 1px solid rgb(252, 221, 181);
 }
 .money-flow .main-table td:nth-child(1){
     text-align: center;
-    
 }
-
+.money-flow h1{
+    text-align: center;
+    padding: 20px;
+    font-size: 30px;
+}

@@ -40,14 +40,26 @@ def Check():
     form = request.form
     acc = form['ACC']
     pwd = form['PWD']
+    role = form['role']
     dat = db.GetLoginInfo(acc,pwd)
-    if dat and acc == dat['user_account'] and pwd == dat['user_password']:
+    if dat and acc == dat['email'] and pwd == dat['password'] and role == dat['role']:
         session['loginID'] = dat['user_id']
-        session['userName'] = dat['user_name']
-        return redirect('/')
+        session['name'] = dat['name']
+        session['role'] = dat['role']
+        if session['role'] == 'customer':
+            return redirect('/')
+        elif session['role'] == 'store':
+            return redirect('/S_Dashboard')
+        elif session['role'] == 'delivery':
+            return redirect('/')
+        elif session['role'] == 'platform':
+            return redirect('/admin_store')
+        else:
+            return redirect('/')
     else: 
         flash('Your account or password is wrong.')
         return redirect("/login")
+    
 
 # 登出
 @app.route('/logout', methods=['POST'])
@@ -76,6 +88,15 @@ def Registing():
 # -------------------------------------------------登入功能---------------------------------------------------------------------
 
 
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------首頁---------------------------------------------------------------------
 # 首頁
 @app.route('/')
@@ -90,7 +111,7 @@ def Home():
     return render_template('index.html', name=name,customer_id=customer_id)   
 
 # 搜尋功能
-@app.route('/search', methods=['POST'])
+@app.route('/search', methods=['GET'])
 def Search():
     form = request.form
     search_input = form['SEARCH']
@@ -99,13 +120,70 @@ def Search():
     return render_template('searchpage.html', data=product, list_title="Search")
 # -------------------------------------------------首頁---------------------------------------------------------------------
 
+
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------平台---------------------------------------------------------------------
 
-@app.route('/admin')
-def PDashBoard():
-    return render_template('admin.html')
+@app.route('/admin_store')
+def PAdminStore():
+    data = db.PGetStoreTransaction()
+    pdata = []
+    for i in data:
+        store_income = float(i['total_sum'])
+        tmpdic = {"store_name": i["store_name"],
+                  "store_income": store_income,
+                  "platform_income": store_income*0.35,
+                  "store_profit": store_income*0.75
+                  }
+        pdata.append(tmpdic)
+    return render_template('admin.html', data = pdata )
+
+@app.route('/admin_customer')
+def PAdminCustomer():
+    data = db.PGetCustomerTransaction()
+    pdata = []
+    for i in data:
+        store_income = float(i['total_sum'])
+        tmpdic = {"store_name": i["store_name"],
+                  "store_income": store_income,
+                  "platform_income": store_income*0.35,
+                  "store_profit": store_income*0.75
+                  }
+        pdata.append(tmpdic)
+    return render_template('admin.html', data = pdata )
+
+@app.route('/admin_delivery')
+def PAdminDelivery():
+    data = db.PGetdeliveryTransaction()
+    pdata = []
+    for i in data:
+        store_income = float(i['total_sum'])
+        tmpdic = {"store_name": i["store_name"],
+                  "store_income": store_income,
+                  "platform_income": store_income*0.35,
+                  "store_profit": store_income*0.75
+                  }
+        pdata.append(tmpdic)
+    return render_template('admin.html', data = pdata )
 
 # -------------------------------------------------平台---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
 
 # -------------------------------------------------顧客---------------------------------------------------------------------    
 @app.route('/C_商家菜單', methods=['GET'])
@@ -151,7 +229,6 @@ def COrderConfirmation():
 def Cg5():
     customer_id = session.get('customer_id')
     order_id = db.CGetLatestOrderId(customer_id)
-
     if request.method == "POST":
         # 獲取總金額並更新到 orders 表
         total_amount = db.CCalculateTotalAmount(order_id)
@@ -180,38 +257,23 @@ def Cdelete():
 # -------------------------------------------------顧客---------------------------------------------------------------------    
 
 
-# -------------------------------------------------店家登入功能---------------------------------------------------------------------
-def LoginRequired(f):
-    @wraps(f)
-    def Wrapper(*args, **kwargs):
-        S_id = session.get('S_id')
-        if not S_id:
-            return redirect('/S_login')
-        return f(*args, **kwargs)
-    return Wrapper
-# Store login page
-@app.route("/S_Login")
-def SLogin():
-    return render_template('store_login.html')
-# Store account validation
-@app.route('/S_Check', methods=['POST'])
-def SCheck():
-    form = request.form
-    acc = form['ACC']
-    pwd = form['PWD']
-    S_info = db.SGetInfoByAccount(acc, pwd)
-    if S_info:
-        session['S_id'] = S_info['store_id']
-        session['S_name'] = S_info['store_name']
-        return redirect('/store_dashboard')
-    else:
-        flash('Your account or password is incorrect.')
-        return redirect("/store_login")
-# Store logout
-@app.route('/S_Logout', methods=['POST'])
-def SLogout():
-    session['S_id'] = None
-    return redirect('/')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------店家首頁---------------------------------------------------------------------
 # Store dashboard page
 @app.route('/S_Dashboard')
@@ -314,3 +376,133 @@ def SDeleteOrder(order_id):
     return redirect('/S_dashboard')
 if __name__ == '__main__':
     app.run(debug=True)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+# -------------------------------------------------外送員功能---------------------------------------------------------------------
+# 外送員首頁：待接訂單與已接訂單
+@app.route('/deliveryhome')
+@LoginRequired
+def DeliveryHome():
+    pending_orders = db.GetPendingOrders()  # 待接訂單
+    delivery_id = session['loginID']  # 取得外送員 ID
+    accepted_orders = db.GetAcceptedOrders(delivery_id)
+    completed_orders = db.GetCompletedOrders(delivery_id)  # 完成訂單，根據外送員 ID
+    return render_template('deliveryhome.html', pending_orders=pending_orders, accepted_orders=accepted_orders,completed_orders=completed_orders)
+
+@app.route('/pending_order/<int:order_id>', methods=['GET'])
+@LoginRequired
+def PendingDetail(order_id):
+    # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
+    order_items, store_info, customer_info = db.GetOrderDetails(order_id)
+    order_status = db.GetOrderStatus(order_id)
+    
+    order_delivery_id = db.GetDeliveryID(order_id) 
+
+    total_quantity = sum(item['quantity'] for item in order_items)
+    total_price = sum(item['total_item_price'] for item in order_items)
+    
+    return render_template(
+        'order_detail.html',
+        order_items=order_items,
+        order_id=order_id,
+        store_name=store_info.get('store_name', ''),
+        store_address=store_info.get('store_address', ''),
+        customer_name=customer_info.get('customer_name', ''),
+        customer_address=customer_info.get('customer_address', ''),
+        total_quantity=total_quantity,
+        total_price=total_price,
+        order_status=order_status,
+        delivery_id=order_delivery_id,
+        is_pending=True
+    )
+
+@app.route('/order_detail/<int:order_id>', methods=['GET'])
+@LoginRequired
+def AcceptedDetail(order_id):
+
+    order_items, store_info, customer_info = db.GetOrderDetails(order_id)
+    order_status = db.GetOrderStatus(order_id)
+    delivery_id = session.get('delivery_id')
+
+    total_quantity = sum(item['quantity'] for item in order_items)
+    total_price = sum(item['total_item_price'] for item in order_items)
+    
+    return render_template(
+        'order_detail.html',
+        order_items=order_items,
+        order_id=order_id,
+        store_name=store_info.get('store_name', ''),
+        store_address=store_info.get('store_address', ''),
+        customer_name=customer_info.get('customer_name', ''),
+        customer_address=customer_info.get('customer_address', ''),
+        total_quantity=total_quantity,
+        total_price=total_price,
+        order_status=order_status,
+        delivery_id=delivery_id,  # 将数据库中的 delivery_id 传递给模板
+        is_pending=False
+    )
+
+@app.route('/Completed_order/<int:order_id>', methods=['GET'])
+@LoginRequired
+def CompletedDetail(order_id):
+    # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
+    order_items, store_info, customer_info = db.GetOrderDetails(order_id)
+    order_status = db.GetOrderStatus(order_id)
+    feedback = db.GetFeedbackByOrder(order_id)
+    order_delivery_id = db.GetDeliveryID(order_id) 
+
+    total_quantity = sum(item['quantity'] for item in order_items)
+    total_price = sum(item['total_item_price'] for item in order_items)
+    
+    return render_template(
+        'order_detail.html',
+        order_items=order_items,
+        order_id=order_id,
+        store_name=store_info.get('store_name', ''),
+        store_address=store_info.get('store_address', ''),
+        customer_name=customer_info.get('customer_name', ''),
+        customer_address=customer_info.get('customer_address', ''),
+        total_quantity=total_quantity,
+        total_price=total_price,
+        order_status=order_status,
+        delivery_id=order_delivery_id,
+        feedback=feedback
+    )
+
+@app.route('/order/accept/<int:order_id>', methods=['POST'])
+@LoginRequired
+def accept_order(order_id):
+    # 確認當前登入的外送員ID是否存在於 session 中
+    delivery_id = session.get('delivery_id')  # 使用 session 中儲存的外送員ID
+    if not delivery_id:  # 如果沒有登入，跳轉到登入頁面
+        return redirect("/login")
+    
+    # 設置訂單的 delivery_id，標示該外送員接單
+    db.UpdateOrderStatus(order_id, status='waiting', delivery_id=delivery_id)  # 保持 status 為 'waiting'
+
+    return redirect('/deliveryHome')
+
+@app.route('/order/complete/<int:order_id>', methods=['POST'])
+@LoginRequired
+def complete_order(order_id):
+    # 確認當前登入的外送員ID是否存在於 session 中
+    delivery_id = session.get('delivery_id')
+    if not delivery_id: 
+        return redirect("/login")  # 未登入則跳轉到登入頁面 
+
+    # 更新訂單狀態為已完成
+    db.UpdateOrderStatus(order_id, status='completed', delivery_id=delivery_id)
+    
+    # 完成訂單後返回訂單首頁
+    return redirect('/deliveryhome')

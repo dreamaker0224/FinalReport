@@ -20,27 +20,16 @@
                 </tr>
             </thead>
             <tbody>
+                {%for i in data%}
                 <tr>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
+                    <td>{{ i.store_name }}</td>
+                    <td>${{ i.store_income }}</td>
+                    <td>${{ i.store_profit }}</td>
+                    <td>${{ i.platform_income }}</td>
                 </tr>
-                <tr>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
-                </tr>
-                <tr>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
-                    <td>123</td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </section>
-    {% include "bottom.html" %}
   </body>
 </html>

@@ -3,22 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單列表</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        /* 調整 navbar 位置 */
-        .navbar {
-            position: fixed;  /* 固定在頁面頂部 */
-            top: 0;
-            left: 0;
-            width: 100%;  /* 寬度設定為 100% */
-            z-index: 1000;  /* 確保 navbar 在最上層 */
-        }
-
-        /* 頁面內容避免被 navbar 蓋住 */
-        body {
-            margin-top: 100px;  /* 根據 navbar 高度調整，可以視情況修改 */
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/delivery.css') }}">
 </head>
 <body>
     <!-- 引入已經存在的 navbar.html -->

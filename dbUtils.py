@@ -31,7 +31,7 @@ def GetAllItems():
 
 # -------------------------------------------------登入---------------------------------------------------------------------
 def GetLoginInfo(id,pwd):
-	sql="select * from users where user_account=%s and user_password=%s"
+	sql="select * from users where email=%s and password=%s"
 	param=(id,pwd,)
 	cursor.execute(sql,param)
 	user = cursor.fetchone()
@@ -57,6 +57,70 @@ def SearchFromDB(search_input):
     items = cursor.fetchall()
     return items
 # -------------------------------------------------搜尋---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------搜尋---------------------------------------------------------------------
+def PGetStoreTransaction():
+    sql = '''
+    SELECT s.store_name, SUM(o.total_price) AS total_sum
+    FROM orders o
+    JOIN stores s ON o.store_id = s.store_id
+    GROUP BY s.store_name;
+    '''
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    return data
+
+def PGetCustomerTransaction():
+    sql = '''
+    SELECT s.store_name, SUM(o.total_price) AS total_sum
+    FROM orders o
+    JOIN stores s ON o.store_id = s.store_id
+    GROUP BY s.store_name;
+    '''
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    return data
+
+def PGetDeliveryTransaction():
+    sql = '''
+    SELECT s.store_name, SUM(o.total_price) AS total_sum
+    FROM orders o
+    JOIN stores s ON o.store_id = s.store_id
+    GROUP BY s.store_name;
+    '''
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    return data
+# -------------------------------------------------搜尋---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------顧客---------------------------------------------------------------------
 def CGetStoreId(store_name):
     sql = "SELECT store_id FROM stores WHERE store_name = %s"
@@ -169,6 +233,22 @@ def DeleteUnpaidOrders(customer_id):
         # 提交刪除操作
         conn.commit()   
 # -------------------------------------------------顧客---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # -------------------------------------------------店家---------------------------------------------------------------------
 # Get store info by account and password
 def GetStoreInfoByAccount(acc, pwd):
@@ -259,3 +339,182 @@ def UpdateStoreInfo(store_id, store_name, store_address, store_phone):
     cursor.execute(sql, (store_name, store_address, store_phone, store_id))
     conn.commit()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------外送員---------------------------------------------------------------------
+
+
+def GetDeliveryID(user_id):
+    sql = "SELECT delivery_id FROM delivery_personnel WHERE user_id = %s;"
+    cursor.execute(sql, (user_id,))
+    result = cursor.fetchone()
+    return result['delivery_id'] if result else None
+
+# -------------------------------------------------待接訂單---------------------------------------------------------------------
+def GetPendingOrders():
+    sql = """
+        SELECT 
+            u.name, c.customer_id, o.order_id, 
+            IFNULL(SUM(oi.quantity * oi.price), 0) AS total_price
+        FROM customers c
+        JOIN users u ON c.user_id = u.user_id
+        JOIN orders o ON c.customer_id = o.customer_id
+        LEFT JOIN order_items oi ON oi.order_id = o.order_id
+        WHERE o.status = 'waiting' 
+        AND o.delivery_id IS NULL
+        GROUP BY o.order_id, u.name, c.customer_id;
+    """
+    cursor.execute(sql)
+    pending_orders = cursor.fetchall()
+    if not pending_orders:
+        print("No pending orders found.")
+    return pending_orders
+
+# -------------------------------------------------已接訂單---------------------------------------------------------------------
+
+def GetAcceptedOrders(delivery_id):
+    sql = """
+        SELECT 
+            u.name, c.customer_id, o.order_id, 
+            IFNULL(SUM(oi.quantity * oi.price), 0) AS total_price
+        FROM customers c
+        JOIN users u ON c.user_id = u.user_id
+        JOIN orders o ON c.customer_id = o.customer_id
+        LEFT JOIN order_items oi ON oi.order_id = o.order_id
+        WHERE o.status = 'waiting' 
+        AND o.delivery_id = %s
+        GROUP BY o.order_id, u.name, c.customer_id;
+    """
+    cursor.execute(sql, (delivery_id,))
+    accepted_orders = cursor.fetchall()
+    if not accepted_orders:
+        print(f"No accepted orders found for delivery ID {delivery_id}.")
+    return accepted_orders
+
+# -------------------------------------------------完成的訂單---------------------------------------------------------------------
+def GetCompletedOrders(delivery_id):
+    sql = """
+        SELECT 
+            u.name, c.customer_id, o.order_id, 
+            IFNULL(SUM(oi.quantity * oi.price), 0) AS total_price
+        FROM customers c
+        JOIN users u ON c.user_id = u.user_id
+        JOIN orders o ON c.customer_id = o.customer_id
+        LEFT JOIN order_items oi ON oi.order_id = o.order_id
+        WHERE o.status = 'completed' 
+        AND o.delivery_id = %s
+        GROUP BY o.order_id, u.name, c.customer_id;
+    """
+    cursor.execute(sql, (delivery_id,))  # 傳遞 delivery_id 作為參數
+    completed_orders = cursor.fetchall()
+    if not completed_orders:
+        print(f"No completed orders found for delivery ID {delivery_id}.")
+    return completed_orders
+
+# -------------------------------------------------訂單詳細資料---------------------------------------------------------------------
+def GetOrderDetails(order_id):
+    sql = """
+        SELECT 
+            oi.quantity, 
+            oi.price, 
+            (oi.quantity * oi.price) AS total_item_price,
+            mi.item_name, 
+            s.store_name AS store_name, 
+            s.address AS store_address, 
+            u.name AS customer_name, 
+            c.address AS customer_address
+        FROM order_items oi
+        JOIN menu_items mi ON oi.item_id = mi.item_id
+        JOIN orders o ON oi.order_id = o.order_id
+        JOIN stores s ON o.store_id = s.store_id
+        JOIN customers c ON o.customer_id = c.customer_id
+        JOIN users u ON c.user_id = u.user_id
+        WHERE oi.order_id = %s;
+    """
+    cursor.execute(sql, (order_id,))
+    order_items = cursor.fetchall()
+
+    # 提取商家與顧客資訊
+    if order_items:
+        store_info = {
+            "store_name": order_items[0].get("store_name", ""),
+            "store_address": order_items[0].get("store_address", "")
+        }
+        customer_info = {
+            "customer_name": order_items[0].get("customer_name", ""),
+            "customer_address": order_items[0].get("customer_address", "")
+        }
+    else:
+        store_info = {}
+        customer_info = {}
+
+    return order_items, store_info, customer_info
+
+
+# -------------------------------------------------更新訂單狀態---------------------------------------------------------------------
+def UpdateOrderStatus(order_id, status, delivery_id=None):
+
+    sql = """
+        UPDATE orders
+        SET status = %s, delivery_id = %s, updated_at = NOW()
+        WHERE order_id = %s;
+    """
+    param = (status, delivery_id, order_id)
+    cursor.execute(sql, param)
+
+
+def GetOrderStatus(order_id):
+    sql = "SELECT status FROM orders WHERE order_id = %s;"
+    cursor.execute(sql, (order_id,))
+    result = cursor.fetchone()
+    if result:
+        return result['status']
+    else:
+        return None
+# -------------------------------------------------查看訂單評價---------------------------------------------------------------------
+def GetFeedbackByOrder(order_id):
+    """
+    獲取指定訂單的評價
+    """
+    sql = """
+        SELECT 
+            f.review_id, f.order_id, f.customer_id, 
+            f.target_id, f.target_role, 
+            f.rating, f.comment, f.created_at
+        FROM feedback f
+        WHERE f.order_id = %s;
+    """
+    cursor.execute(sql, (order_id,))
+    feedback = cursor.fetchall()
+    
+    if not feedback:
+        print(f"No feedback found for order ID {order_id}.")
+    
+    return feedback
+
+# -------------------------------------------------外送員---------------------------------------------------------------------

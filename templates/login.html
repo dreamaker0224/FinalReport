@@ -12,7 +12,27 @@
                 <div class="back" onClick="history.back()"> &lt; back</div>
                 <form action="/check" method="post">
                     <h1>Hello Wellcome!</h1>
-                    <div class="account">
+                    <div class="user-type">
+                        <label for="customer">
+                            <input type="radio" id="customer" name="role" value="customer" required/>
+                            客戶
+                        </label>
+            
+                        <label for="store">
+                            <input type="radio" id="store" name="role" value="store">
+                            商家
+                        </label>
+            
+                        <label for="delivery">
+                            <input type="radio" id="delivery" name="role" value="delivery">
+                            外送員
+                        </label>
+                        <label for="delivery">
+                            <input type="radio" id="platform" name="role" value="platform">
+                            管理員
+                        </label>
+                    </div>
+                    <div class="account">   
                         <h3>Email:</h3>
                         <input type="email" name="ACC" required/>
                     </div>
