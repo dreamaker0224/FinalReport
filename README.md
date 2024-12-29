@@ -10,14 +10,14 @@
 
 
 ## db 設計圖
-`USERS` 裡面的 role 會有四個種類
-'customer'，'store'，'delivery_personnel'，'platform'，對應到角色。
-`MENU_ITEMS` 是可以點的食物，(商家創建)
-`ORDER_ITEMS` 是客戶點的食物，(客戶創建)
-`ORDERS` 是訂單(客戶創建)，資訊最多
-`FEEBACK` 我這裡改成只針對 `ODERS` 
-`TRANSACTIONS` 也是只針對 `ODERS`
-sql 可以多利用 join 找自己要的東西
+`USERS` 裡面的 role 會有四個種類<br>
+'customer'，'store'，'delivery_personnel'，'platform'，對應到角色。<br>
+`MENU_ITEMS` 是可以點的食物，(商家創建)<br>
+`ORDER_ITEMS` 是客戶點的食物，(客戶創建)<br>
+`ORDERS` 是訂單(客戶創建)，資訊最多<br>
+`FEEBACK` 我這裡改成只針對 `ODERS` <br>
+`TRANSACTIONS` 也是只針對 `ODERS`<br>
+sql 可以多利用 join 找自己要的東西<br>
 ```mermaid
 erDiagram
     USERS {
