@@ -1,3 +1,3 @@
 import dbUtils as db
-data = db.PGetStoreTransaction()
-print(data)
+dat = db.GetLoginInfo('stest2@stest2','stest2')
+print(dat)

@@ -12,6 +12,26 @@
                 <div class="back" onClick="history.back()"> &lt; back</div>
                 <form action="/registing" method="post">
                     <h1>Welcome! <br/>建立一個帳號</h1>
+                    <div class="user-type">
+                        <label for="customer">
+                            <input type="radio" id="customer" name="role" value="customer" required/>
+                            客戶
+                        </label>
+            
+                        <label for="store">
+                            <input type="radio" id="store" name="role" value="store">
+                            商家
+                        </label>
+            
+                        <label for="delivery">
+                            <input type="radio" id="delivery" name="role" value="delivery">
+                            外送員
+                        </label>
+                        <label for="delivery">
+                            <input type="radio" id="platform" name="role" value="platform">
+                            管理員
+                        </label>
+                    </div>
                     <div class="account">
                         <h3>使用者名稱:</h3>
                         <input type="text" name="username" required />

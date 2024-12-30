@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>訂單列表</title>
+</head>
+<body>
+  {% include "navbar.html" %}
+  <h1>訂單列表</h1>
+
+  <!-- 目前訂單 -->
+  <h2>目前訂單</h2>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>商家名稱</th>
+        <th>總金額</th>
+        <th>建立時間</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders if order.status == "waiting" %}
+      <tr onclick="window.location.href='/C_myorder/{{ order.order_id }}'">
+        <td>{{ order.store_name }}</td>
+        <td>{{ order.total_price }}</td>
+        <td>{{ order.created_at }}</td>
+        <td>
+          無法給予評價
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4">目前沒有訂單</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- 歷史訂單 -->
+  <h2>歷史訂單</h2>
+  <table border="1" cellpadding="5" cellspacing="0">
+    <thead>
+      <tr>
+        <th>商家名稱</th>
+        <th>總金額</th>
+        <th>建立時間</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders if order.status != "waiting" %}
+      <tr onclick="window.location.href='/C_myorder/{{ order.order_id }}'">
+        <td>{{ order.store_name }}</td>
+        <td>{{ order.total_price }}</td>
+        <td>{{ order.created_at }}</td>
+        <td>
+          {% if order.status == 'completed' %}
+            {% if order.review_id %}
+                已給予評價
+            {% else %}
+                <a href="/C_feedback/{{ order.order_id }}">給予評價</a>
+            {% endif %}
+          {% else %}
+            無法給予評價
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="4">沒有歷史訂單</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

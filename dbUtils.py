@@ -26,7 +26,15 @@ def GetList():
 
 # -------------------------------------------------首頁---------------------------------------------------------------------
 def GetAllStores():
-    sql="select * from stores where 1"  
+    sql='''
+    SELECT stores.*, 
+       ROUND(AVG(feedback.rating), 1) AS avg_rating, 
+       COUNT(feedback.review_id) AS review_count
+    FROM stores
+    LEFT JOIN orders ON stores.store_id = orders.store_id
+    LEFT JOIN feedback ON orders.order_id = feedback.order_id
+    GROUP BY stores.store_id;
+    '''
     cursor.execute(sql)
     return cursor.fetchall()
 # -------------------------------------------------首頁---------------------------------------------------------------------
@@ -34,23 +42,56 @@ def GetAllStores():
 
 
 # -------------------------------------------------登入---------------------------------------------------------------------
-def GetLoginInfo(id,pwd):
-	sql="select * from users where email=%s and password=%s"
-	param=(id,pwd,)
-	cursor.execute(sql,param)
-	user = cursor.fetchone()
-	if user:
-		return user
-	return None
+def GetLoginInfo(id, pwd):
+    sql="select * from users where email=%s and password=%s"
+    param=(id,pwd,)
+    cursor.execute(sql,param)
+    user = cursor.fetchone()
+    if user:
+        return user
+    return None
+
+def GetRoleID(id, role):
+    if role == "customer":
+        sql="select customer_id as role_id from customers where user_id=%s"
+    elif role == "store":
+        sql="select store_id as role_id from stores where user_id=%s"
+    elif role == "delivery":
+        sql="select delivery_id as role_id from delivery_personnel where user_id=%s"
+    param=(id,)
+    cursor.execute(sql,param)
+    role_id = cursor.fetchone()
+    if role_id:
+        return role_id
+    return None
+    
 # -------------------------------------------------搜尋---------------------------------------------------------------------
 
 # -------------------------------------------------註冊---------------------------------------------------------------------
-def AddUser(user_name,account,password):
-    sql = "INSERT INTO users (user_name,user_account,user_password) VALUES (%s,%s,%s);"
-    param = (user_name,account,password,)
-    cursor.execute(sql,param)
+def AddUser(user_name, account, password, role):
+    # 插入用戶資料
+    sql = "INSERT INTO users (name, email, password, role) VALUES (%s, %s, %s, %s);"
+    param = (user_name, account, password, role)
+    cursor.execute(sql, param)
     conn.commit()
-    return
+
+    # 取得剛插入的 user_id
+    user_id = cursor.lastrowid
+
+    # 根據角色插入到相應的表格
+    if role == 'store':
+        # 假設 'stores' 表格有 user_id 欄位
+        cursor.execute("INSERT INTO stores (user_id, store_name) VALUES (%s, %s);", (user_id, user_name,))
+    elif role == 'customer':
+        # 假設 'customers' 表格有 user_id 欄位
+        cursor.execute("INSERT INTO customers (user_id) VALUES (%s);", (user_id,))
+    elif role == 'delivery_personnel':
+        # 假設 'delivery_personnel' 表格有 user_id 欄位
+        cursor.execute("INSERT INTO delivery_personnel (user_id) VALUES (%s);", (user_id,))
+
+    # 提交所有更改
+    conn.commit()
+
 # -------------------------------------------------註冊---------------------------------------------------------------------
 
 # -------------------------------------------------搜尋---------------------------------------------------------------------
@@ -138,7 +179,13 @@ def CLog(user_id, password):   # 登入驗證，根據 id 和 pwd 查找登入�
     cursor.execute(sql, param)
     user = cursor.fetchone()  # 獲取查詢結果
     return user
-  
+
+def CGetMenuItems(store_id):
+    sql="select * from menu_items where store_id = %s"
+    param=(store_id,)
+    cursor.execute(sql,param)
+    return cursor.fetchall()
+
 def CGetList():# 查詢菜單主菜
 	sql="select item_id,store_id,item_name,price,description from menu_items where description LIKE '%主餐%';"
 	#param=('值',...)
@@ -189,10 +236,18 @@ def CGetLatestOrderId(customer_id):
     return result['order_id'] if result else None
     
 def CCalculateTotalAmount(order_id):
-    sql = "SELECT SUM(quantity * price) AS total_amount FROM order_items WHERE order_id = %s"
-    cursor.execute(sql, (order_id,))
-    result = cursor.fetchone()  # 獲取單一記錄
-    return result['total_amount'] if result and result['total_amount'] else 0
+    # 計算訂單的總金額
+    sql_sum = "SELECT SUM(quantity * price) AS total_amount FROM order_items WHERE order_id = %s"
+    cursor.execute(sql_sum, (order_id,))
+    result = cursor.fetchone()
+    total_amount = result['total_amount'] if result and result['total_amount'] else 0
+
+    # 更新到 orders 表
+    sql_update = "UPDATE orders SET total_price = %s WHERE order_id = %s"
+    cursor.execute(sql_update, (total_amount, order_id))
+    conn.commit()  # 確保更改提交到資料庫
+    return total_amount
+
 def CAddress(customer_id):
     sql = "SELECT address FROM customers WHERE customer_id = %s"
     cursor.execute(sql, (customer_id,))
@@ -236,6 +291,71 @@ def DeleteUnpaidOrders(customer_id):
 
         # 提交刪除操作
         conn.commit()   
+        
+        
+def CGetMyOrders(customer_id):
+    sql ='''
+    SELECT orders.*, 
+       stores.store_name, 
+       feedback.review_id 
+    FROM orders 
+    JOIN stores ON orders.store_id = stores.store_id 
+    LEFT JOIN feedback ON orders.order_id = feedback.order_id 
+    WHERE orders.customer_id = %s
+    GROUP BY orders.order_id;
+    '''
+    param = (customer_id, )
+    cursor.execute(sql,param)
+    data = cursor.fetchall()
+    return data
+
+def CGetOrders(order_id):
+    sql = '''
+    SELECT orders.*, feedback.review_id
+    FROM orders
+    LEFT JOIN feedback ON orders.order_id = feedback.order_id
+    WHERE orders.order_id = %s;
+    '''
+    param = (order_id, )
+    cursor.execute(sql,param)
+    data = cursor.fetchone()
+    return data
+
+
+def CGetOrdersItems(order_id):
+    sql = '''SELECT oi.*, mi.item_name 
+    FROM order_items oi
+    JOIN menu_items mi ON oi.item_id = mi.item_id
+    WHERE oi.order_id = %s;
+    '''
+    param = (order_id, )
+    cursor.execute(sql,param)
+    data = cursor.fetchall()
+    return data
+
+from datetime import datetime
+
+def CUpdateFeedback(order_id, customer_id, rate, comment):
+    # 獲取當前時間
+    created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    
+    # SQL 查詢：插入評價資料，並記錄當前時間
+    sql = """
+    INSERT INTO feedback (order_id, customer_id, rating, comment, created_at)
+    VALUES (%s, %s, %s, %s, %s);
+    """
+    param = (order_id, customer_id, rate, comment, created_at)
+    
+    # 執行 SQL 查詢
+    cursor.execute(sql, param)
+    
+    # 提交變更到資料庫
+    conn.commit()
+    
+    return
+
+    
+    
 # -------------------------------------------------顧客---------------------------------------------------------------------
 
 
@@ -481,15 +601,17 @@ def GetOrderDetails(order_id):
 
 
 # -------------------------------------------------更新訂單狀態---------------------------------------------------------------------
-def UpdateOrderStatus(order_id, status, delivery_id=None):
+def DUpdateOrderStatus(order_id, status, delivery_id):
 
     sql = """
         UPDATE orders
         SET status = %s, delivery_id = %s, updated_at = NOW()
         WHERE order_id = %s;
     """
-    param = (status, delivery_id, order_id)
+    param = (status, delivery_id, order_id,)
     cursor.execute(sql, param)
+    conn.commit()
+    return
 
 
 def GetOrderStatus(order_id):

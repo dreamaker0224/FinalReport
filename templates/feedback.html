@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>給予評價</title>
+  </head>
+  <body>
+    {% include "navbar.html" %}
+    <h1>給予訂單 #{{ order.order_id }} 評價</h1>
+
+    <form action="/submit_feedback/{{ order.order_id }}" method="POST">
+      <div>
+        <label for="rating">評分：</label>
+        <select name="rating" id="rating" required>
+          <option value="1">1 星</option>
+          <option value="2">2 星</option>
+          <option value="3">3 星</option>
+          <option value="4">4 星</option>
+          <option value="5">5 星</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="comment">評論：</label>
+        <textarea
+          name="comment"
+          id="comment"
+          rows="4"
+          cols="50"
+          placeholder="請輸入您的評論..."
+          required
+        ></textarea>
+      </div>
+
+      <div>
+        <button type="submit">提交評價</button>
+      </div>
+    </form>
+
+    <a href="/C_myorder">返回訂單列表</a>
+  </body>
+</html>

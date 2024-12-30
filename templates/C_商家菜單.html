@@ -130,51 +130,11 @@ function submitOrder() {
     <a href="#drinks" style="text-decoration: none;">飲料</a>
   </div>
 </div>
-<!-- 主菜區域 -->
+<!-- 餐點區域 -->
 <div class="menu-section" id="main">
-  <h2>主菜</h2>
+  <h2>餐點</h2>
   <table border="1" width="100%">
-    {% for item in main %}
-    <tr>
-      <td>{{ item.item_name }}</td>
-      <td>{{ item.price }}$</td>
-      <td>
-        <div class="container">
-          <button onclick="decrease(this)" data-id="{{ item.item_id }}">-</button>
-          <span class="number" data-id="{{ item.item_id }}">0</span>
-          <button onclick="increase(this)" data-id="{{ item.item_id }}">+</button>
-        </div>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div>
-
-<!-- 小點區域 -->
-<div class="menu-section" id="snacks">
-  <h2>小點</h2>
-  <table border="1" width="100%">
-    {% for item in snacks %}
-    <tr>
-      <td>{{ item.item_name }}</td>
-      <td>{{ item.price }}$</td>
-      <td>
-        <div class="container">
-          <button onclick="decrease(this)" data-id="{{ item.item_id }}">-</button>
-          <span class="number" data-id="{{ item.item_id }}">0</span>
-          <button onclick="increase(this)" data-id="{{ item.item_id }}">+</button>
-        </div>
-      </td>
-    </tr>
-    {% endfor %}
-  </table>
-</div>
-
-<!-- 飲料區域 -->
-<div class="menu-section" id="drinks">
-  <h2>飲料</h2>
-  <table border="1" width="100%">
-    {% for item in drinks %}
+    {% for item in menu %}
     <tr>
       <td>{{ item.item_name }}</td>
       <td>{{ item.price }}$</td>
