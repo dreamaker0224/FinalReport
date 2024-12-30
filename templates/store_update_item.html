@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    {% include "navbar.html" %}
     <div class="update-item-container">
         <h2>更新菜品</h2>
-        <form action="/store_update_item/{{ item.item_id }}" method="POST">
+        <form action="/S_Update_Item/{{ item.item_id }}" method="POST"> <!-- gpt 修改: 修正更新菜品的路徑 -->
             <label for="item_name">菜品名稱</label>
             <input type="text" id="item_name" name="item_name" value="{{ item.item_name }}" required>
             
@@ -21,7 +22,7 @@
             
             <button type="submit">更新菜品</button>
         </form>
-        <a href="/store_menu">回到菜單管理</a>
+        <a href="/S_Menu">回到菜單管理</a> <!-- gpt 修改: 修正返回菜單管理的路徑 -->
     </div>
 </body>
 </html>

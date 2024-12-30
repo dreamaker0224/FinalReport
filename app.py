@@ -46,6 +46,7 @@ def Check():
         session['loginID'] = dat['user_id']
         session['name'] = dat['name']
         session['role'] = dat['role']
+        session['role_id'] = dat['role_id']
         if session['role'] == 'customer':
             return redirect('/')
         elif session['role'] == 'store':
@@ -101,14 +102,14 @@ def Registing():
 # 首頁
 @app.route('/')
 def Home():
-    # dat = db.GetAllItems()
+    dat = db.GetAllStores()
     # -------------------------------------------------顧客---------------------------------------------------------------------   
     name = session.get('name')
     customer_id = session.get('customer_id')
     order_id =db.CGetLatestOrderId(customer_id)
     db.DeleteUnpaidOrders(customer_id)
 # -------------------------------------------------顧客---------------------------------------------------------------------   
-    return render_template('index.html', name=name,customer_id=customer_id)   
+    return render_template('index.html', name=name,customer_id=customer_id, stores = dat)   
 
 # 搜尋功能
 @app.route('/search', methods=['GET'])
@@ -279,33 +280,46 @@ def Cdelete():
 @app.route('/S_Dashboard')
 @LoginRequired
 def SDashboard():
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     S_id = session.get('store_id')
     orders = db.GetOrdersByStore(S_id)
     return render_template('store_dashboard.html', orders=orders)
+
 # -------------------------------------------------菜單管理---------------------------------------------------------------------
 # Store menu page
 @app.route('/S_Menu', methods=['GET'])
 @LoginRequired
 def SMenu():
-    S_id = session.get('S_id')
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
+    S_id = session.get('store_id')  # gpt 修改: 修正 session key 為 store_id
     items = db.GetMenuItemsByStore(S_id)
     return render_template('store_menu.html', items=items)
+
 # Add menu item
-@app.route('/S_Add_Item', methods=['POST'])
+@app.route('/S_Add_Item', methods=['GET', 'POST'])
 @LoginRequired
-def SAddItem():
-    S_id = session.get('store_id')
-    form = request.form
-    item_name = form['item_name']
-    price = form['price']
-    description = form['description']
-    db.AddMenuItem(S_id, item_name, price, description)
-    flash('Item added successfully!')
-    return redirect('/store_menu')
+def SAddItemPage():
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
+    if request.method == 'POST':
+        S_id = session.get('store_id')  # gpt 生成: 獲取當前店家的 store_id
+        form = request.form
+        item_name = form['item_name']
+        price = form['price']
+        description = form['description']
+        db.AddMenuItem(S_id, item_name, price, description)  # gpt 生成: 調用數據庫函數新增菜品
+        flash('Item added successfully!')  # gpt 生成: 添加成功提示
+        return redirect('/S_Menu')  # gpt 生成: 返回菜單管理頁面
+    return render_template('store_add_item.html')  # gpt 生成: 渲染新增菜品頁面
+
 # Update menu item
 @app.route('/S_Update_Item/<int:item_id>', methods=['GET', 'POST'])
 @LoginRequired
 def SUpdateItem(item_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     if request.method == 'POST':
         form = request.form
         item_name = form['item_name']
@@ -313,69 +327,87 @@ def SUpdateItem(item_id):
         description = form['description']
         db.UpdateMenuItem(item_id, item_name, price, description)
         flash('Item updated successfully!')
-        return redirect('/store_menu')
+        return redirect('/S_Menu')  # gpt 修改: 修正 redirect 路徑
     item = db.GetMenuItemById(item_id)
     return render_template('store_update_item.html', item=item)
+
 # Delete menu item
 @app.route('/S_Delete_Item/<int:item_id>', methods=['GET'])
 @LoginRequired
 def SDeleteItem(item_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     db.DeleteMenuItem(item_id)
     flash('Item deleted successfully!')
-    return redirect('/store_menu')
+    return redirect('/S_Menu')  # gpt 修改: 修正 redirect 路徑
+
 # -------------------------------------------------訂單管理---------------------------------------------------------------------
 # Order details
 @app.route('/Store_Order_Details/<int:order_id>', methods=['GET'])
 @LoginRequired
 def SOrderDetails(order_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     items = db.GetOrderItems(order_id)
     total_amount = db.CalculateOrderTotal(order_id)
     return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id)
+
 # Update order status
 @app.route('/S_Update_Order_status/<int:order_id>', methods=['POST'])
 @LoginRequired
 def SUpdateOrderStatus(order_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     status = request.form['status']
     db.UpdateOrderStatus(order_id, status)
     flash('Order status updated successfully!')
-    return redirect('/store_dashboard')
+    return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
+
 # -------------------------------------------------店家報表---------------------------------------------------------------------
 # Sales report for current month
 @app.route('/S_Sales_Report', methods=['GET'])
 @LoginRequired
 def SSalesReport():
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     store_id = session.get('store_id')
     year = datetime.now().year
     month = datetime.now().month
     total_sales = db.GetMonthlySalesReport(store_id, year, month)
     return render_template('store_sales_report.html', total_sales=total_sales, year=year, month=month)
+
 # -------------------------------------------------店家管理---------------------------------------------------------------------
 # Update store info
 @app.route('/S_Update_Info', methods=['GET', 'POST'])
 @LoginRequired
 def SUpdateInfo():
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     S_id = session.get('store_id')
-    S_info = db.GetStoreInfo('store_id')
-    
+    S_info = db.GetStoreInfo(S_id)  # gpt 修改: 修正參數為 S_id
+
     if request.method == 'POST':
         S_name = request.form['store_name']
         S_address = request.form['store_address']
         S_phone = request.form['store_phone']
-        db.UpdateStoreInfo('store_id', S_name, S_address, S_phone)
-        flash('S information updated successfully!')
-        return redirect('/S_dashboard')
-    
-    return render_template('S_update_info.html', S_info=S_info)
+        db.UpdateStoreInfo(S_id, S_name, S_address, S_phone)  # gpt 修改: 修正參數為 S_id
+        flash('Store information updated successfully!')  # gpt 修改: 修正訊息內容
+        return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
+
+    return render_template('store_update_info.html', store_info=S_info)
+
 # -------------------------------------------------店家刪除訂單---------------------------------------------------------------------
 # Delete order
 @app.route('/S_Delete_Order/<int:order_id>', methods=['GET'])
 @LoginRequired
 def SDeleteOrder(order_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
     db.DeleteOrder(order_id)
     flash('Order deleted successfully!')
-    return redirect('/S_dashboard')
-if __name__ == '__main__':
-    app.run(debug=True)
+    return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
+
+
     
     
     
@@ -394,6 +426,8 @@ if __name__ == '__main__':
 @app.route('/deliveryhome')
 @LoginRequired
 def DeliveryHome():
+    if session.get("role") != "delivery ": #判斷是否為外送員
+        return redirect("/")
     pending_orders = db.GetPendingOrders()  # 待接訂單
     delivery_id = session['loginID']  # 取得外送員 ID
     accepted_orders = db.GetAcceptedOrders(delivery_id)
@@ -403,6 +437,8 @@ def DeliveryHome():
 @app.route('/pending_order/<int:order_id>', methods=['GET'])
 @LoginRequired
 def PendingDetail(order_id):
+    if session.get("role") != "delivery ": #判斷是否為外送員
+        return redirect("/")
     # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
@@ -430,7 +466,8 @@ def PendingDetail(order_id):
 @app.route('/order_detail/<int:order_id>', methods=['GET'])
 @LoginRequired
 def AcceptedDetail(order_id):
-
+    if session.get("role") != "delivery ": #判斷是否為外送員
+        return redirect("/")
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
     delivery_id = session.get('delivery_id')
@@ -456,6 +493,8 @@ def AcceptedDetail(order_id):
 @app.route('/Completed_order/<int:order_id>', methods=['GET'])
 @LoginRequired
 def CompletedDetail(order_id):
+    if session.get("role") != "delivery ": #判斷是否為外送員
+        return redirect("/")
     # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
@@ -483,10 +522,10 @@ def CompletedDetail(order_id):
 @app.route('/order/accept/<int:order_id>', methods=['POST'])
 @LoginRequired
 def accept_order(order_id):
+    if session.get("role") != "delivery ": #判斷是否為外送員
+        return redirect("/")
     # 確認當前登入的外送員ID是否存在於 session 中
     delivery_id = session.get('delivery_id')  # 使用 session 中儲存的外送員ID
-    if not delivery_id:  # 如果沒有登入，跳轉到登入頁面
-        return redirect("/login")
     
     # 設置訂單的 delivery_id，標示該外送員接單
     db.UpdateOrderStatus(order_id, status='waiting', delivery_id=delivery_id)  # 保持 status 為 'waiting'

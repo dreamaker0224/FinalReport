@@ -24,10 +24,14 @@ def GetList():
 	cursor.execute(sql)
 	return cursor.fetchall()
 
-def GetAllItems():
-    sql=""  
+# -------------------------------------------------首頁---------------------------------------------------------------------
+def GetAllStores():
+    sql="select * from stores where 1"  
     cursor.execute(sql)
     return cursor.fetchall()
+# -------------------------------------------------首頁---------------------------------------------------------------------
+
+
 
 # -------------------------------------------------登入---------------------------------------------------------------------
 def GetLoginInfo(id,pwd):
@@ -335,7 +339,7 @@ def GetMonthlySalesReport(store_id, year, month):
 
 # -------------------------------------------------更新店家信息---------------------------------------------------------------------
 def UpdateStoreInfo(store_id, store_name, store_address, store_phone):
-    sql = """UPDATE stores SET store_name = %s, store_address = %s, store_phone = %s WHERE store_id = %s"""
+    sql = """UPDATE stores SET store_name = %s, address = %s, phone_number = %s WHERE store_id = %s"""
     cursor.execute(sql, (store_name, store_address, store_phone, store_id))
     conn.commit()
 

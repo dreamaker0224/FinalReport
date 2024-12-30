@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    {% include "navbar.html" %}
     <div class="dashboard-container">
         <h2>{{ store_name }} 店家儀表板</h2>
         <p>歡迎來到你的儀表板</p>
@@ -32,20 +33,17 @@
                     <td>{{ order.total_price }}</td>
                     <td>{{ order.status }}</td>
                     <td>
-                        <a href="/store_order_details/{{ order.order_id }}">查看</a> |
-                        <a href="/store_update_order_status/{{ order.order_id }}" onclick="return confirm('確認更新狀態？')">更新狀態</a> |
-                        <a href="/store_delete_order/{{ order.order_id }}" onclick="return confirm('確認刪除訂單？')">刪除</a>
+                        <a href="/Store_Order_Details/{{ order.order_id }}">查看</a> | <!-- gpt 修改: 修正查看訂單詳情的路徑 -->
+                        <a href="/S_Update_Order_status/{{ order.order_id }}" onclick="return confirm('確認更新狀態？')">更新狀態</a> | <!-- gpt 修改: 修正更新狀態的路徑 -->
+                        <a href="/S_Delete_Order/{{ order.order_id }}" onclick="return confirm('確認刪除訂單？')">刪除</a> <!-- gpt 修改: 修正刪除訂單的路徑 -->
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         
-        <a href="/store_menu">管理菜單</a> | 
-        <a href="/store_update_info">更新店家資訊</a> | 
-        <form action="/store_logout" method="POST" style="display:inline;">
-            <button type="submit">登出</button>
-        </form>
+        <a href="/S_Menu">管理菜單</a> | <!-- gpt 修改: 修正管理菜單的路徑 -->
+        <a href="/S_Update_Info">更新店家資訊</a> | <!-- gpt 修改: 修正更新店家資訊的路徑 -->
     </div>
 </body>
 </html>

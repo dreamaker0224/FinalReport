@@ -31,12 +31,12 @@
                         <h3>確認密碼:</h3>
                         <input type="password" name="confirm_password" required />
                     </div>
-                    {% with messages=get_flashed_messages() %}
-                        {% if messages %}
-                            {% for message in messages %}
-                                <p style="color:red; font-size:13px; text-align:left;width:100%">{{message}}</p>
-                            {% endfor %}
-                        {% endif %}
+                    {% with messages = get_flashed_messages() %}
+                        {% for message in messages %}
+                            {% if message == "The password doesn't match" %}
+                                <p style="color:red; font-size:13px; text-align:left;width:100%">{{ message }}</p>
+                            {% endif %}
+                        {% endfor %}
                     {% endwith %}
                     <br />
                     <button type="submit" id="submit">Sign Up</button>

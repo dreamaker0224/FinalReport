@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
+    {% include "navbar.html" %}
     <div class="order-details-container">
         <h2>訂單詳情 - 訂單 ID: {{ order_id }}</h2>
         <table>
@@ -30,7 +31,7 @@
             </tbody>
         </table>
         <p>總金額: {{ total_amount }}</p>
-        <form action="/store_update_order_status/{{ order_id }}" method="POST">
+        <form action="/S_Update_Order_status/{{ order_id }}" method="POST"> <!-- gpt 修改: 修正更新訂單狀態的路徑 -->
             <label for="status">訂單狀態</label>
             <select name="status" id="status">
                 <option value="Pending">待處理</option>
@@ -39,7 +40,7 @@
             </select>
             <button type="submit">更新狀態</button>
         </form>
-        <a href="/store_dashboard">回到儀表板</a>
+        <a href="/S_Dashboard">回到儀表板</a> <!-- gpt 修改: 修正返回儀表板的路徑 -->
     </div>
 </body>
 </html>
