@@ -270,13 +270,23 @@ def CCalculateTotalAmount(order_id):
 def CAddress(customer_id):
     sql = "SELECT address FROM customers WHERE customer_id = %s"
     cursor.execute(sql, (customer_id,))
-    return cursor.fetchall()   
+    return cursor.fetchall()  
+def CPhone(customer_id):
+    sql = "SELECT phone_number FROM customers WHERE customer_id = %s"
+    cursor.execute(sql, (customer_id,))
+    return cursor.fetchall()    
 def CUpdateToList(total_amount,order_id):#更新訂單價格
 	sql="update orders set total_price=%s where order_id=%s"
 	cursor.execute(sql,(total_amount,order_id,))
 	conn.commit()
 	return
-        
+
+def CUpdateInfo(address, phone, customer_id):
+    sql="update customers set address=%s, phone_number=%s where customer_id=%s"
+    cursor.execute(sql,(address, phone, customer_id, ))
+    conn.commit()
+    return
+
 def CDelete(order_id): # 
 	sql="delete from orders where order_id=%s"
 	cursor.execute(sql,(order_id,))

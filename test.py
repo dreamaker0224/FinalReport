@@ -1,3 +1,3 @@
 import dbUtils as db
-dat = db.GetLoginInfo('stest2@stest2','stest2')
+dat = db.CCalculateTotalAmount(31)
 print(dat)

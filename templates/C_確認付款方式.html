@@ -92,6 +92,14 @@
             </div>
             {% endfor %}
 
+            <!-- 聯絡方式輸入 -->
+            {% for p in phone %}
+            <div class="form-group">
+                <label for="phone">聯絡方式:</label>
+                <input type="text" id="phone" name="phone" value="{{ p.phone_number }}" placeholder="請輸入聯絡方式">
+            </div>
+            {% endfor %}
+
             <!-- 提交按鈕 -->
             <div id="button">
                 <a href="/" class="btn">返回首頁</a>

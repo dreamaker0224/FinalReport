@@ -110,7 +110,7 @@ def Home():
     dat = db.GetAllStores()
     # -------------------------------------------------顧客---------------------------------------------------------------------   
     name = session.get('name')
-    customer_id = session.get('customer_id')
+    customer_id = session.get('role_id')
     order_id =db.CGetLatestOrderId(customer_id)
     db.DeleteUnpaidOrders(customer_id)
 # -------------------------------------------------顧客---------------------------------------------------------------------   
@@ -239,7 +239,7 @@ def COrderConfirmation():
 def Cg5():
     if session.get("role") != "customer": #判斷是否為客戶
         return redirect("/login")
-    customer_id = session.get('customer_id')
+    customer_id = session.get('role_id')
     order_id = db.CGetLatestOrderId(customer_id)
     if request.method == "POST":
         # 獲取總金額並更新到 orders 表
@@ -248,6 +248,8 @@ def Cg5():
 
         # 獲取地址（可以從 POST 資料中取得）
         address = request.form.get("address")
+        phone = request.form.get("phone")
+        db.CUpdateInfo(address, phone, customer_id)
 
         # 這裡可以根據需求更新地址或進一步處理
         return redirect("/")  # 確認付款後跳轉回首頁
@@ -256,7 +258,8 @@ def Cg5():
         # 獲取總金額及地址資料
         total_amount = db.CCalculateTotalAmount(order_id)
         address = db.CAddress(customer_id)
-        return render_template('/C_確認付款方式.html', total_amount=total_amount, address=address)
+        phone = db.CPhone(customer_id)
+        return render_template('/C_確認付款方式.html', total_amount=total_amount, address=address, phone = phone)
 
 
 @app.route("/C_delete")
