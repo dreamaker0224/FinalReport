@@ -694,14 +694,7 @@ def GetFeedbackByOrder(order_id):
     """
     獲取指定訂單的評價
     """
-    sql = """
-        SELECT 
-            f.review_id, f.order_id, f.customer_id, 
-            f.target_id, f.target_role, 
-            f.rating, f.comment, f.created_at
-        FROM feedback f
-        WHERE f.order_id = %s;
-    """
+    sql ='SELECT * FROM feedback WHERE order_id = %s;'
     cursor.execute(sql, (order_id,))
     feedback = cursor.fetchall()
     

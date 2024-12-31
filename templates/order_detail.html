@@ -116,10 +116,10 @@
     >
       <button class="action-button" type="submit">完成(已送達)</button>
     </form>
-    {% elif order_status == 'completed' %}
+    {% elif order_status == 'completed' or order_status == 'cancelled' %}
     <div class="section">
       <h3>訂單評價</h3>
-      {% if feedback and feedback|length > 0 %}
+      {% if feedback %}
       <ul>
         {% for review in feedback %}
         <div>
