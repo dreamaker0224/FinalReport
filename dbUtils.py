@@ -24,6 +24,12 @@ def GetList():
 	cursor.execute(sql)
 	return cursor.fetchall()
 
+def GetOrder(order_id):
+    sql="select * from orders where order_id = %s"
+    param = (order_id,)
+    cursor.execute(sql,param)
+    return cursor.fetchone()
+
 # -------------------------------------------------首頁---------------------------------------------------------------------
 def GetAllStores():
     sql='''
@@ -122,6 +128,7 @@ def PGetStoreTransaction():
     SELECT s.store_name, SUM(o.total_price) AS total_sum
     FROM orders o
     JOIN stores s ON o.store_id = s.store_id
+    WHERE o.status = 'completed'
     GROUP BY s.store_name;
     '''
     cursor.execute(sql)
@@ -130,10 +137,16 @@ def PGetStoreTransaction():
 
 def PGetCustomerTransaction():
     sql = '''
-    SELECT s.store_name, SUM(o.total_price) AS total_sum
+    SELECT 
+    u.user_id, 
+    u.name AS user_name, 
+    SUM(o.total_price) AS total_sum, 
+    COUNT(o.order_id) AS order_count
     FROM orders o
-    JOIN stores s ON o.store_id = s.store_id
-    GROUP BY s.store_name;
+    JOIN customers c ON o.customer_id = c.customer_id
+    JOIN users u ON c.user_id = u.user_id
+    WHERE o.status = 'completed'
+    GROUP BY u.user_id, u.name;
     '''
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -141,10 +154,16 @@ def PGetCustomerTransaction():
 
 def PGetDeliveryTransaction():
     sql = '''
-    SELECT s.store_name, SUM(o.total_price) AS total_sum
+    SELECT 
+    u.user_id, 
+    u.name AS user_name, 
+    SUM(o.total_price) AS total_sum, 
+    COUNT(o.order_id) AS order_count
     FROM orders o
-    JOIN stores s ON o.store_id = s.store_id
-    GROUP BY s.store_name;
+    JOIN delivery_personnel c ON o.delivery_id = c.delivery_id
+    JOIN users u ON c.user_id = u.user_id
+    WHERE o.status = 'completed'
+    GROUP BY u.user_id, u.name;
     '''
     cursor.execute(sql)
     data = cursor.fetchall()
@@ -269,6 +288,12 @@ def CDelete2(order_id):
 	cursor.execute(sql,(order_id,))
 	conn.commit()
 	return 
+
+def CCancel(order_id):
+    sql="UPDATE orders SET status = 'cancelled' WHERE order_id = %s"
+    cursor.execute(sql,(order_id,))
+    conn.commit()
+    return 
     
 def DeleteUnpaidOrders(customer_id):
     # 查詢所有 total_price = 0 的未付款訂單
@@ -352,6 +377,13 @@ def CUpdateFeedback(order_id, customer_id, rate, comment):
     # 提交變更到資料庫
     conn.commit()
     
+    return
+
+# 備餐完成 order
+def CCompleteOrder(order_id):
+    sql = "UPDATE orders SET status = 'completed' WHERE order_id = %s"
+    cursor.execute(sql, (order_id,))
+    conn.commit()
     return
 
     
@@ -443,10 +475,25 @@ def UpdateOrderStatus(order_id, status):
     conn.commit()
 
 # Delete an order
-def DeleteOrder(order_id):
-    sql = "DELETE FROM orders WHERE order_id = %s;"
+def SCancelledOrder(order_id):
+    sql = "UPDATE orders SET status = 'cancelled' WHERE order_id = %s"
     cursor.execute(sql, (order_id,))
     conn.commit()
+    return
+
+# accept order
+def SAcceptOrder(order_id):
+    sql = "UPDATE orders SET status = 'preparing' WHERE order_id = %s"
+    cursor.execute(sql, (order_id,))
+    conn.commit()
+    return
+
+# 備餐完成 order
+def SCompleteOrder(order_id):
+    sql = "UPDATE orders SET status = 'waiting' WHERE order_id = %s"
+    cursor.execute(sql, (order_id,))
+    conn.commit()
+    return
 
 # -------------------------------------------------報表---------------------------------------------------------------------
 # Get monthly sales report
@@ -550,7 +597,7 @@ def GetCompletedOrders(delivery_id):
         JOIN users u ON c.user_id = u.user_id
         JOIN orders o ON c.customer_id = o.customer_id
         LEFT JOIN order_items oi ON oi.order_id = o.order_id
-        WHERE o.status = 'completed' 
+        WHERE (o.status = 'completed' or o.status = 'arrival') 
         AND o.delivery_id = %s
         GROUP BY o.order_id, u.name, c.customer_id;
     """

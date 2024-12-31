@@ -1,132 +1,141 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>訂單詳細資料</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
-            color: #333;
-        }
-        .section {
-            margin-bottom: 20px;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-        .order-items table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .order-items th, .order-items td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .order-items th {
-            background-color: #f9f9f9;
-        }
-        .summary {
-            margin-top: 10px;
-            font-weight: bold;
-            text-align: right;
-        }
-        .action-button {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            width: fit-content;
-        }
-        .action-button:hover {
-            background-color: #0056b3;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      .section-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+      }
+      .order-items table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .order-items th,
+      .order-items td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      .order-items th {
+        background-color: #f9f9f9;
+      }
+      .summary {
+        margin-top: 10px;
+        font-weight: bold;
+        text-align: right;
+      }
+      .action-button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        width: fit-content;
+      }
+      .action-button:hover {
+        background-color: #0056b3;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <h1>訂單 #{{ order_id }} - {{ store_name }}</h1>
     <div class="section">
-        <div class="section-title">商家資訊</div>
-        <p>商家地址：{{ store_address }}</p>
+      <div class="section-title">商家資訊</div>
+      <p>商家地址：{{ store_address }}</p>
     </div>
     <div class="section order-items">
-        <div class="section-title">訂單項目</div>
-        <table>
-            <tr>
-                <th>項目名稱</th>
-                <th>數量</th>
-                <th>項目金額</th>
-            </tr>
-            {% for item in order_items %}
-            <tr>
-                <td>{{ item['item_name'] }}</td>
-                <td>{{ item['quantity'] }}</td>
-                <td>${{ item['price'] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+      <div class="section-title">訂單項目</div>
+      <table>
+        <tr>
+          <th>項目名稱</th>
+          <th>數量</th>
+          <th>項目金額</th>
+        </tr>
+        {% for item in order_items %}
+        <tr>
+          <td>{{ item['item_name'] }}</td>
+          <td>{{ item['quantity'] }}</td>
+          <td>${{ item['price'] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
     </div>
     <div class="summary">
-        <p>總項目數量：{{ total_quantity }}</p>
-        <p>總金額：${{ total_price }}</p>
+      <p>總項目數量：{{ total_quantity }}</p>
+      <p>總金額：${{ total_price }}</p>
     </div>
     <div class="section">
-        <div class="section-title">顧客資訊</div>
-        <p>顧客姓名：{{ customer_name }}</p>
-        <p>顧客地址：{{ customer_address }}</p>
+      <div class="section-title">顧客資訊</div>
+      <p>顧客姓名：{{ customer_name }}</p>
+      <p>顧客地址：{{ customer_address }}</p>
     </div>
 
-    {% if order_status == 'waiting' %}
+    {% if order_status == 'waiting' %} 
     {% if is_pending %}
-        <!-- 待接訂單，顯示接單按鈕 -->
-        <form method="POST" action="{{ url_for('accept_order', order_id=order_id) }}" onsubmit="return confirm('確定要接此訂單嗎？');">
-            <button class="action-button" type="submit">接單</button>
-        </form>
-    {% elif delivery_id == session['delivery_id'] %}
-        <!-- 進行中的訂單，顯示完成按鈕 -->
-        <form method="POST" action="{{ url_for('complete_order', order_id=order_id) }}" onsubmit="return confirm('確認訂單是否已送達？');">
-            <button class="action-button" type="submit">完成(已送達)</button>
-        </form>
-    {% endif %}
+    <!-- 待接訂單，顯示接單按鈕 -->
+    <form
+      method="POST"
+      action="{{ url_for('accept_order', order_id=order_id) }}"
+      onsubmit="return confirm('確定要接此訂單嗎？');"
+    >
+      <button class="action-button" type="submit">接單</button>
+    </form>
+    {% endif %} 
+    {% elif order_status == 'delivering' %}
+    <!-- 進行中的訂單，顯示完成按鈕 -->
+    <form
+      method="POST"
+      action="{{ url_for('complete_order', order_id=order_id) }}"
+      onsubmit="return confirm('確認訂單是否已送達？');"
+    >
+      <button class="action-button" type="submit">完成(已送達)</button>
+    </form>
     {% elif order_status == 'completed' %}
     <div class="section">
-        <h3>訂單評價</h3>
-        {% if feedback and feedback|length > 0 %}
-            <ul>
-                {% for review in feedback %}
-                    <div>
-                        <strong>評分:</strong> {{ review['rating'] }} 分<br>
-                        <strong>評價內容:</strong> {{ review['comment'] | default("無留言") }}<br>
-                    </div>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>尚無評價。</p>
-        {% endif %}
+      <h3>訂單評價</h3>
+      {% if feedback and feedback|length > 0 %}
+      <ul>
+        {% for review in feedback %}
+        <div>
+          <strong>評分:</strong> {{ review['rating'] }} 分<br />
+          <strong>評價內容:</strong> {{ review['comment'] | default("無留言")
+          }}<br />
+        </div>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p>尚無評價。</p>
+      {% endif %}
     </div>
     {% endif %}
 
     <a href="{{ url_for('DeliveryHome') }}">返回</a>
 
     <script type="text/javascript">
-        // 將訂單狀態傳遞給 JavaScript
-        var orderStatus = "{{ order_status }}";
-        
-        // 若訂單狀態是進行中，顯示確認訊息
-        if (orderStatus == 'in_progress') {
-            document.querySelector('form').onsubmit = function() {
-                return confirm('確認訂單是否已送達？');
-            }
-        }
+      // 將訂單狀態傳遞給 JavaScript
+      var orderStatus = "{{ order_status }}";
+
+      // 若訂單狀態是進行中，顯示確認訊息
+      if (orderStatus == "in_progress") {
+        document.querySelector("form").onsubmit = function () {
+          return confirm("確認訂單是否已送達？");
+        };
+      }
     </script>
-</body>
+  </body>
 </html>

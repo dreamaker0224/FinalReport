@@ -3,33 +3,81 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/admin.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/admin.css') }}"
+    />
     <title>FoodPangolin Admin</title>
   </head>
   <body>
-    {% include "navbar.html" %}
+    {% include "navbar.html" %} {% if type == "store" %}
     <section class="money-flow">
-        <h1>商家管理</h1>
-        <table class="main-table">
-            <thead>
-                <tr>
-                    <th>商家名稱</th>
-                    <th>營業額</th>
-                    <th>應收帳款</th>
-                    <th>平台收入</th>
-                </tr>
-            </thead>
-            <tbody>
-                {%for i in data%}
-                <tr>
-                    <td>{{ i.store_name }}</td>
-                    <td>${{ i.store_income }}</td>
-                    <td>${{ i.store_profit }}</td>
-                    <td>${{ i.platform_income }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+      <h1>商家管理</h1>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>商家名稱</th>
+            <th>營業額</th>
+            <th>應收帳款</th>
+            <th>平台收入</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%for i in data %}
+          <tr>
+            <td>{{ i.store_name }}</td>
+            <td>${{ i.store_income }}</td>
+            <td>${{ i.store_profit }}</td>
+            <td>${{ i.platform_income }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </section>
+    {% elif type == 'customer' %}
+    <section class="money-flow">
+      <h1>顧客管理</h1>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>顧客名稱</th>
+            <th>點餐次數</th>
+            <th>應收金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%for i in data %}
+          <tr>
+            <td>{{ i.name }}</td>
+            <td>{{ i.count }}</td>
+            <td>${{ i.total_amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% elif type == 'delivery' %}
+    <section class="money-flow">
+      <h1>外送員管理</h1>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>外送員名稱</th>
+            <th>送餐次數</th>
+            <th>應收金額</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%for i in data %}
+          <tr>
+            <td>{{ i.name }}</td>
+            <td>{{ i.count }}</td>
+            <td>${{ i.total_amount }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
   </body>
 </html>

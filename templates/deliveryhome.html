@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>訂單列表</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/delivery.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/admin.css') }}">
 </head>
 <body>
     <!-- 引入已經存在的 navbar.html -->
     {% include 'navbar.html' %}
 
-    <h1>訂單列表</h1>
+    <h1>外送訂單列表</h1>
 
     <!-- 未接單的訂單列表 -->
     <h2>待接訂單</h2>
-<ul>
-    {% for order in pending_orders %}
-        <li>
-            <a href="{{ url_for('PendingDetail', order_id=order['order_id']) }}">編號: {{ order.order_id }}   總金額: {{ order.total_price }}</a>
-        </li>
-    {% else %}
-        <li>目前沒有待接訂單</li>
-    {% endfor %}
-</ul>
+    <ul>
+        {% for order in pending_orders %}
+            <li>
+                <a href="{{ url_for('PendingDetail', order_id=order['order_id']) }}">編號: {{ order.order_id }}   總金額: {{ order.total_price }}</a>
+            </li>
+        {% else %}
+            <li>目前沒有待接訂單</li>
+        {% endfor %}
+    </ul>
 
-<h2>已接但未完成訂單</h2>
+    <h2>已接但未完成訂單</h2>
     <ul>
         {% for order in accepted_orders %}
             <li>

@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>店家儀表板</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/store_dash.css') }}">
 </head>
 <body>
     {% include "navbar.html" %}
     <div class="dashboard-container">
-        <h2>{{ store_name }} 店家儀表板</h2>
+        <h1>{{ store_name }} 店家儀表板</h1>
         <p>歡迎來到你的儀表板</p>
-        
+
         <h3>訂單管理</h3>
-        <table>
+        <table class="main-table">
             <thead>
                 <tr>
                     <th>訂單ID</th>
@@ -30,20 +30,24 @@
                     <td>{{ order.order_id }}</td>
                     <td>{{ order.customer_id }}</td>
                     <td>{{ order.created_at }}</td>
-                    <td>{{ order.total_price }}</td>
+                    <td>${{ order.total_price }}</td>
                     <td>{{ order.status }}</td>
                     <td>
-                        <a href="/Store_Order_Details/{{ order.order_id }}">查看</a> | <!-- gpt 修改: 修正查看訂單詳情的路徑 -->
-                        <a href="/S_Update_Order_status/{{ order.order_id }}" onclick="return confirm('確認更新狀態？')">更新狀態</a> | <!-- gpt 修改: 修正更新狀態的路徑 -->
-                        <a href="/S_Delete_Order/{{ order.order_id }}" onclick="return confirm('確認刪除訂單？')">刪除</a> <!-- gpt 修改: 修正刪除訂單的路徑 -->
+                        <a href="/Store_Order_Details/{{ order.order_id }}">查看</a> 
+                        {% if order.status == 'pending' %}
+                        <a href="/S_Accept_Order/{{ order.order_id }}" onclick="return confirm('確認接單？')">接單</a>
+                        {% elif order.status == 'preparing' %}
+                        <a href="/S_Complete_Order/{{ order.order_id }}" onclick="return confirm('確認完成訂單？')">完成訂單</a>
+                        {% endif %}
+                        
+                        {% if order.status == 'pending' %}
+                        <a href="/S_Cancel_Order/{{ order.order_id }}" onclick="return confirm('確認取消訂單？')">取消訂單</a>                        
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
-        <a href="/S_Menu">管理菜單</a> | <!-- gpt 修改: 修正管理菜單的路徑 -->
-        <a href="/S_Update_Info">更新店家資訊</a> | <!-- gpt 修改: 修正更新店家資訊的路徑 -->
     </div>
 </body>
 </html>

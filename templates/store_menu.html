@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>菜單管理</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/smenu.css') }}">
 </head>
 <body>
     {% include "navbar.html" %}
     <div class="menu-container">
         <h2>菜單管理</h2>
-        <a href="/S_Dashboard" class="btn">返回 Dashboard</a> <!-- 新增返回 dashboard 的鏈接 -->
         <a href="/S_Add_Item" class="btn">新增菜品</a> <!-- gpt 修改: 修正新增菜品的路徑 -->
-        <table>
+        <table class='main-table'>
             <thead>
                 <tr>
                     <th>菜品名稱</th>
@@ -28,8 +27,8 @@
                     <td>{{ item.price }}</td>
                     <td>{{ item.description }}</td>
                     <td>
-                        <a href="/S_Update_Item/{{ item.item_id }}">編輯</a> | <!-- gpt 修改: 修正編輯的路徑 -->
-                        <a href="/S_Delete_Item/{{ item.item_id }}" onclick="return confirm('確認刪除此菜品？')">刪除</a> <!-- gpt 修改: 修正刪除的路徑 -->
+                        <a class="revise" href="/S_Update_Item/{{ item.item_id }}">編輯</a>  <!-- gpt 修改: 修正編輯的路徑 -->
+                        <a class="delete" href="/S_Delete_Item/{{ item.item_id }}" onclick="return confirm('確認刪除此菜品？')">刪除</a> <!-- gpt 修改: 修正刪除的路徑 -->
                     </td>
                 </tr>
                 {% endfor %}

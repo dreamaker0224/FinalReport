@@ -1,0 +1,72 @@
+.dashboard-container{
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    position: relative;
+}
+.dashboard-container .main-table{
+    margin: auto;
+    max-width: 1200px;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+.dashboard-container .main-table th{
+    width: 200px;
+    text-align: center;
+    padding: 10px;
+    background-color: antiquewhite;
+    border: 1px solid rgb(252, 221, 181);
+
+}
+.dashboard-container .main-table td{
+    padding: 10px 20px;
+    width: 200px;
+    text-align: center;
+    border: 1px solid rgb(252, 221, 181);
+}
+.dashboard-container .main-table td:nth-child(1){
+    text-align: center;
+}
+.dashboard-container h1{
+    text-align: center;
+    padding: 20px 0 5px 0;
+    font-size: 30px;
+}
+.dashboard-container p{
+    text-align: center;
+}
+.dashboard-container h3{
+    padding: 10px;
+}
+.dashboard-container .main-table a{
+    text-decoration: none;
+    color: white;
+    font-weight: 550;
+    display: inline-block;
+    text-align: center;
+    background-color: rgb(255, 169, 21);
+    border: 2px solid rgb(255, 169, 21); 
+    padding: 8px 15px;
+    border-radius: 10px;
+    transition: .2s;
+}
+.dashboard-container .main-table a:hover{
+    background-color: white;
+    color: rgb(255, 169, 21);
+}
+
+.dashboard-container .total-price {
+    padding: 0;
+    text-align: right;
+    font-weight: bold;
+}
+.back{
+    position: absolute;
+    top: 50px;
+    left: 30px;
+    transition: .3s;
+  }
+.back:hover{
+color: gray;
+cursor: pointer;
+}

@@ -43,18 +43,20 @@ def Check():
     role = form['role']
     dat = db.GetLoginInfo(acc,pwd)
     user_id = dat['user_id']
-    role_id = db.GetRoleID(user_id, role)
+    if role != 'platform':
+        role_id = db.GetRoleID(user_id, role)
     if dat and acc == dat['email'] and pwd == dat['password'] and role == dat['role']:
         session['loginID'] = dat['user_id']
         session['name'] = dat['name']
         session['role'] = dat['role']
-        session['role_id'] = role_id['role_id']
+        if session['role'] != 'platform':
+            session['role_id'] = role_id['role_id']
         if session['role'] == 'customer':
             return redirect('/')
         elif session['role'] == 'store':
             return redirect('/S_Dashboard')
         elif session['role'] == 'delivery':
-            return redirect('/')
+            return redirect('/deliveryhome')
         elif session['role'] == 'platform':
             return redirect('/admin_store')
         else:
@@ -148,35 +150,31 @@ def PAdminStore():
                   "store_profit": store_income*0.75
                   }
         pdata.append(tmpdic)
-    return render_template('admin.html', data = pdata )
+    return render_template('admin.html', data = pdata , type = 'store')
 
 @app.route('/admin_customer')
 def PAdminCustomer():
     data = db.PGetCustomerTransaction()
     pdata = []
     for i in data:
-        store_income = float(i['total_sum'])
-        tmpdic = {"store_name": i["store_name"],
-                  "store_income": store_income,
-                  "platform_income": store_income*0.35,
-                  "store_profit": store_income*0.75
+        tmpdic = {"name": i["user_name"],
+                  "count": i["order_count"],
+                  "total_amount": i['total_sum']
                   }
         pdata.append(tmpdic)
-    return render_template('admin.html', data = pdata )
+    return render_template('admin.html', data = pdata , type = 'customer')
 
 @app.route('/admin_delivery')
 def PAdminDelivery():
-    data = db.PGetdeliveryTransaction()
+    data = db.PGetDeliveryTransaction()
     pdata = []
     for i in data:
-        store_income = float(i['total_sum'])
-        tmpdic = {"store_name": i["store_name"],
-                  "store_income": store_income,
-                  "platform_income": store_income*0.35,
-                  "store_profit": store_income*0.75
+        tmpdic = {"name": i["user_name"],
+                  "count": i["order_count"],
+                  "total_amount": i["order_count"]*15
                   }
         pdata.append(tmpdic)
-    return render_template('admin.html', data = pdata )
+    return render_template('admin.html', data = pdata , type = 'delivery')
 
 # -------------------------------------------------平台---------------------------------------------------------------------
 
@@ -254,10 +252,9 @@ def Cg5():
 
 @app.route("/C_delete")
 def Cdelete():
-    customer_id = session.get('customer_id')
+    customer_id = session.get('role_id')
     order_id =db.CGetLatestOrderId(customer_id)
-    db.CDelete2(order_id)
-    db.CDelete(order_id)
+    db.CCancel(order_id)
     return redirect('/')
 
 @app.route("/C_myorder") #我的訂單
@@ -286,6 +283,16 @@ def CSubFeed(order_id):
     customer_id = session.get("role_id")
     db.CUpdateFeedback(order_id, customer_id, rate, comment)
     return redirect("/C_myorder")
+
+# 完成訂單
+@app.route('/C_complete/<int:order_id>', methods=['GET'])
+@LoginRequired
+def CCompleteOrder(order_id):
+    if session.get("role") != "customer": #判斷是否為商家
+        return redirect("/")
+    db.CCompleteOrder(order_id)
+    flash('Order complete successfully!')
+    return redirect('/C_myorder')  # gpt 修改: 修正 redirect 路徑
 # -------------------------------------------------顧客---------------------------------------------------------------------    
 
 
@@ -380,19 +387,30 @@ def SOrderDetails(order_id):
     if session.get("role") != "store": #判斷是否為商家
         return redirect("/")
     items = db.GetOrderItems(order_id)
+    order = db.GetOrder(order_id)
     total_amount = db.CalculateOrderTotal(order_id)
-    return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id)
+    return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id, order = order)
 
-# Update order status
-@app.route('/S_Update_Order_status/<int:order_id>', methods=['POST'])
+# 接單
+@app.route('/S_Accept_Order/<int:order_id>', methods=['GET'])
 @LoginRequired
-def SUpdateOrderStatus(order_id):
+def SAcceptOrder(order_id):
     if session.get("role") != "store": #判斷是否為商家
         return redirect("/")
-    status = request.form['status']
-    db.UpdateOrderStatus(order_id, status)
-    flash('Order status updated successfully!')
+    db.SAcceptOrder(order_id)
+    flash('Order accept successfully!')
     return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
+
+# 完成訂單
+@app.route('/S_Complete_Order/<int:order_id>', methods=['GET'])
+@LoginRequired
+def SCompleteOrder(order_id):
+    if session.get("role") != "store": #判斷是否為商家
+        return redirect("/")
+    db.SCompleteOrder(order_id)
+    flash('Order complete successfully!')
+    return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
+
 
 # -------------------------------------------------店家報表---------------------------------------------------------------------
 # Sales report for current month
@@ -429,13 +447,13 @@ def SUpdateInfo():
 
 # -------------------------------------------------店家刪除訂單---------------------------------------------------------------------
 # Delete order
-@app.route('/S_Delete_Order/<int:order_id>', methods=['GET'])
+@app.route('/S_Cancel_Order/<int:order_id>', methods=['GET'])
 @LoginRequired
 def SDeleteOrder(order_id):
     if session.get("role") != "store": #判斷是否為商家
         return redirect("/")
-    db.DeleteOrder(order_id)
-    flash('Order deleted successfully!')
+    db.SCancelledOrder(order_id)
+    flash('Order cancelled successfully!')
     return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
 
 
@@ -559,7 +577,7 @@ def accept_order(order_id):
     delivery_id = session.get('role_id')  # 使用 session 中儲存的外送員ID
     
     # 設置訂單的 delivery_id，標示該外送員接單
-    db.DUpdateOrderStatus(order_id, 'waiting', delivery_id)  # 保持 status 為 'waiting'
+    db.DUpdateOrderStatus(order_id, 'delivering', delivery_id)  # 保持 status 為 'delivering'
 
     return redirect('/deliveryhome')
 
@@ -572,7 +590,7 @@ def complete_order(order_id):
     delivery_id = session.get('role_id')
 
     # 更新訂單狀態為已完成
-    db.DUpdateOrderStatus(order_id, status='completed', delivery_id=delivery_id)
+    db.DUpdateOrderStatus(order_id, status='arrival', delivery_id=delivery_id)
     
     # 完成訂單後返回訂單首頁
     return redirect('/deliveryhome')
