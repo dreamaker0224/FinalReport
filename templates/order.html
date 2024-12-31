@@ -3,15 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='/styles/corder.css') }}" />
   <title>訂單列表</title>
 </head>
 <body>
   {% include "navbar.html" %}
+  <section class="order-container">
   <h1>訂單列表</h1>
 
   <!-- 目前訂單 -->
   <h2>目前訂單</h2>
-  <table border="1" cellpadding="5" cellspacing="0">
+  <table class="main-table" border="1" cellpadding="5" cellspacing="0">
     <thead>
       <tr>
         <th>商家名稱</th>
@@ -48,7 +50,7 @@
 
   <!-- 歷史訂單 -->
   <h2>歷史訂單</h2>
-  <table border="1" cellpadding="5" cellspacing="0">
+  <table class="main-table" border="1" cellpadding="5" cellspacing="0">
     <thead>
       <tr>
         <th>商家名稱</th>
@@ -84,5 +86,6 @@
       {% endfor %}
     </tbody>
   </table>
+  </section>
 </body>
 </html>

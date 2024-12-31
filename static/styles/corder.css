@@ -1,16 +1,16 @@
-.dashboard-container{
+.order-container{
     max-width: 800px;
     margin: auto;
     padding: 20px;
     position: relative;
 }
-.dashboard-container .main-table{
+.order-container .main-table{
     margin: auto;
     max-width: 1200px;
     border-collapse: collapse;
     margin-bottom: 10px;
 }
-.dashboard-container .main-table th{
+.order-container .main-table th{
     width: 200px;
     text-align: center;
     padding: 10px;
@@ -18,27 +18,27 @@
     border: 1px solid rgb(252, 221, 181);
 
 }
-.dashboard-container .main-table td{
+.order-container .main-table td{
     padding: 10px 20px;
     width: 200px;
     text-align: center;
     border: 1px solid rgb(252, 221, 181);
 }
-.dashboard-container .main-table td:nth-child(1){
+.order-container .main-table td:nth-child(1){
     text-align: center;
 }
-.dashboard-container h1{
+.order-container h1{
     text-align: center;
     padding: 20px 0 5px 0;
     font-size: 30px;
 }
-.dashboard-container p{
+.order-container p{
     text-align: center;
 }
-.dashboard-container h3{
+.order-container h3{
     padding: 10px;
 }
-.dashboard-container .main-table a{
+.order-container .main-table a{
     text-decoration: none;
     color: white;
     font-weight: 550;
@@ -50,12 +50,12 @@
     margin: 3px;
     transition: .2s;
 }
-.dashboard-container .main-table a:hover{
+.order-container .main-table a:hover{
     background-color:rgb(150, 95, 0);
     border: 2px solid rgb(150, 95, 0); 
 }
 
-.dashboard-container .total-price {
+.order-container .total-price {
     padding: 0;
     text-align: right;
     font-weight: bold;
