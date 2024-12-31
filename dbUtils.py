@@ -556,7 +556,7 @@ def GetPendingOrders():
         JOIN users u ON c.user_id = u.user_id
         JOIN orders o ON c.customer_id = o.customer_id
         LEFT JOIN order_items oi ON oi.order_id = o.order_id
-        WHERE o.status = 'waiting' 
+        WHERE (o.status IN ('waiting', 'preparing', 'pending'))
         AND o.delivery_id IS NULL
         GROUP BY o.order_id, u.name, c.customer_id;
     """
@@ -571,13 +571,13 @@ def GetPendingOrders():
 def GetAcceptedOrders(delivery_id):
     sql = """
         SELECT 
-            u.name, c.customer_id, o.order_id, 
+            u.name, c.customer_id, o.order_id, o.status, 
             IFNULL(SUM(oi.quantity * oi.price), 0) AS total_price
         FROM customers c
         JOIN users u ON c.user_id = u.user_id
         JOIN orders o ON c.customer_id = o.customer_id
         LEFT JOIN order_items oi ON oi.order_id = o.order_id
-        WHERE o.status = 'waiting' 
+        WHERE (o.status IN ('waiting', 'preparing', 'pending', 'delivering'))
         AND o.delivery_id = %s
         GROUP BY o.order_id, u.name, c.customer_id;
     """
@@ -597,7 +597,7 @@ def GetCompletedOrders(delivery_id):
         JOIN users u ON c.user_id = u.user_id
         JOIN orders o ON c.customer_id = o.customer_id
         LEFT JOIN order_items oi ON oi.order_id = o.order_id
-        WHERE (o.status = 'completed' or o.status = 'arrival') 
+        WHERE (o.status IN ('completed', 'arrival'))
         AND o.delivery_id = %s
         GROUP BY o.order_id, u.name, c.customer_id;
     """
@@ -606,6 +606,25 @@ def GetCompletedOrders(delivery_id):
     if not completed_orders:
         print(f"No completed orders found for delivery ID {delivery_id}.")
     return completed_orders
+
+def GetCancelledOrders(delivery_id):
+    sql = """
+        SELECT 
+            u.name, c.customer_id, o.order_id, 
+            IFNULL(SUM(oi.quantity * oi.price), 0) AS total_price
+        FROM customers c
+        JOIN users u ON c.user_id = u.user_id
+        JOIN orders o ON c.customer_id = o.customer_id
+        LEFT JOIN order_items oi ON oi.order_id = o.order_id
+        WHERE (o.status IN ('cancelled'))
+        AND o.delivery_id = %s
+        GROUP BY o.order_id, u.name, c.customer_id;
+    """
+    cursor.execute(sql, (delivery_id,))  # 傳遞 delivery_id 作為參數
+    cancelled_orders = cursor.fetchall()
+    if not cancelled_orders:
+        print(f"No cancelled orders found for delivery ID {delivery_id}.")
+    return cancelled_orders
 
 # -------------------------------------------------訂單詳細資料---------------------------------------------------------------------
 def GetOrderDetails(order_id):
@@ -669,6 +688,7 @@ def GetOrderStatus(order_id):
         return result['status']
     else:
         return None
+
 # -------------------------------------------------查看訂單評價---------------------------------------------------------------------
 def GetFeedbackByOrder(order_id):
     """

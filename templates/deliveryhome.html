@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>訂單列表</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/admin.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/admin.css') }}"
+    />
+  </head>
+  <body>
     <!-- 引入已經存在的 navbar.html -->
     {% include 'navbar.html' %}
 
@@ -14,36 +17,60 @@
     <!-- 未接單的訂單列表 -->
     <h2>待接訂單</h2>
     <ul>
-        {% for order in pending_orders %}
-            <li>
-                <a href="{{ url_for('PendingDetail', order_id=order['order_id']) }}">編號: {{ order.order_id }}   總金額: {{ order.total_price }}</a>
-            </li>
-        {% else %}
-            <li>目前沒有待接訂單</li>
-        {% endfor %}
+      {% for order in pending_orders %}
+      <li>
+        <a href="{{ url_for('PendingDetail', order_id=order['order_id']) }}"
+          >編號: {{ order.order_id }} 總金額: {{ order.total_price }}</a
+        >
+      </li>
+      {% else %}
+      <li>目前沒有待接訂單</li>
+      {% endfor %}
     </ul>
 
     <h2>已接但未完成訂單</h2>
     <ul>
-        {% for order in accepted_orders %}
-            <li>
-                <a href="{{ url_for('AcceptedDetail', order_id=order['order_id']) }}">編號: {{ order['order_id'] }} - 總金額: ${{ order['total_price'] }} - 狀態: 已接，等待送達。</a>
-            </li>
-        {% else %}
-            <li>目前沒有已接但未完成訂單</li>
-        {% endfor %}
+      {% for order in accepted_orders %}
+      <li>
+        <a href="{{ url_for('AcceptedDetail', order_id=order['order_id']) }}"
+          >編號: {{ order['order_id'] }} - 總金額: ${{ order['total_price'] }} -
+          狀態:{% if order.status != 'delivering' %}已接單，等代取貨。 {% elif
+          order.status == 'delivering' %} 已取貨，等待送達 {% endif %}</a
+        >
+      </li>
+      {% else %}
+      <li>目前沒有已接但未完成訂單</li>
+      {% endfor %}
     </ul>
 
-<!-- 完成的訂單 -->
-<h2>完成的訂單</h2>
-<ul>
-    {% for order in completed_orders %}
-        <li>
-            <a href="{{ url_for('CompletedDetail', order_id=order['order_id']) }}">編號: {{ order['order_id'] }} - 總金額: ${{ order['total_price'] }} - 狀態: 已送達。</a>
-        </li>
-    {% else %}
-        <li>目前沒有已接訂單</li>
-    {% endfor %}
-</ul>
-</body>
+    <!-- 完成的訂單 -->
+    <h2>完成的訂單</h2>
+    <ul>
+      {% for order in completed_orders %}
+      <li>
+        <a href="{{ url_for('CompletedDetail', order_id=order['order_id']) }}"
+          >編號: {{ order['order_id'] }} - 總金額: ${{ order['total_price'] }} -
+          狀態: 已送達。</a
+        >
+      </li>
+      {% else %}
+      <li>目前沒有已接訂單</li>
+      {% endfor %}
+    </ul>
+
+    <!-- 取消的訂單 -->
+    <h2>取消的訂單</h2>
+    <ul>
+      {% for order in cancelled_orders %}
+      <li>
+        <a href="{{ url_for('CancelledDetail', order_id=order['order_id']) }}"
+          >編號: {{ order['order_id'] }} - 總金額: ${{ order['total_price'] }} -
+          狀態: 取消。</a
+        >
+      </li>
+      {% else %}
+      <li>目前沒有被取消訂單</li>
+      {% endfor %}
+    </ul>
+  </body>
 </html>

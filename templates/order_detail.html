@@ -85,7 +85,7 @@
       <p>顧客地址：{{ customer_address }}</p>
     </div>
 
-    {% if order_status == 'waiting' %} 
+    {% if order_status == 'pending' or order_status == 'preparing' %} 
     {% if is_pending %}
     <!-- 待接訂單，顯示接單按鈕 -->
     <form
@@ -95,7 +95,18 @@
     >
       <button class="action-button" type="submit">接單</button>
     </form>
-    {% endif %} 
+    {% else %}
+      <p style="text-align: center;">等待取貨</p>
+    </form>
+    {% endif %}
+    {% elif order_status == 'waiting' %}
+    <form
+      method="POST"
+      action="{{ url_for('get_order', order_id=order_id) }}"
+      onsubmit="return confirm('確認訂單是否已送達？');"
+    >
+      <button class="action-button" type="submit">取貨</button>
+    </form>
     {% elif order_status == 'delivering' %}
     <!-- 進行中的訂單，顯示完成按鈕 -->
     <form

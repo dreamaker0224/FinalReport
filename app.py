@@ -502,10 +502,11 @@ def DeliveryHome():
     if session.get("role") != "delivery": #判斷是否為外送員
         return redirect("/login")
     pending_orders = db.GetPendingOrders()  # 待接訂單
-    delivery_id = session['loginID']  # 取得外送員 ID
+    delivery_id = session['role_id']  # 取得外送員 ID
     accepted_orders = db.GetAcceptedOrders(delivery_id)
     completed_orders = db.GetCompletedOrders(delivery_id)  # 完成訂單，根據外送員 ID
-    return render_template('deliveryhome.html', pending_orders=pending_orders, accepted_orders=accepted_orders,completed_orders=completed_orders)
+    cancelled_orders = db.GetCancelledOrders(delivery_id)
+    return render_template('deliveryhome.html', pending_orders=pending_orders, accepted_orders=accepted_orders,completed_orders=completed_orders, cancelled_orders=cancelled_orders, delivery_id=delivery_id)
 
 @app.route('/pending_order/<int:order_id>', methods=['GET'])
 @LoginRequired
@@ -591,6 +592,35 @@ def CompletedDetail(order_id):
         delivery_id=order_delivery_id,
         feedback=feedback
     )
+    
+@app.route('/Completed_order/<int:order_id>', methods=['GET'])
+@LoginRequired
+def CancelledDetail(order_id):
+    if session.get("role") != "delivery": #判斷是否為外送員
+        return redirect("/login")
+    # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
+    order_items, store_info, customer_info = db.GetOrderDetails(order_id)
+    order_status = db.GetOrderStatus(order_id)
+    feedback = db.GetFeedbackByOrder(order_id)
+    order_delivery_id = db.GetDeliveryID(order_id) 
+
+    total_quantity = sum(item['quantity'] for item in order_items)
+    total_price = sum(item['total_item_price'] for item in order_items)
+    
+    return render_template(
+        'order_detail.html',
+        order_items=order_items,
+        order_id=order_id,
+        store_name=store_info.get('store_name', ''),
+        store_address=store_info.get('store_address', ''),
+        customer_name=customer_info.get('customer_name', ''),
+        customer_address=customer_info.get('customer_address', ''),
+        total_quantity=total_quantity,
+        total_price=total_price,
+        order_status=order_status,
+        delivery_id=order_delivery_id,
+        feedback=feedback
+    )
 
 @app.route('/order/accept/<int:order_id>', methods=['POST'])
 @LoginRequired
@@ -600,8 +630,9 @@ def accept_order(order_id):
     # 確認當前登入的外送員ID是否存在於 session 中
     delivery_id = session.get('role_id')  # 使用 session 中儲存的外送員ID
     
+    status = db.GetOrderStatus(order_id)
     # 設置訂單的 delivery_id，標示該外送員接單
-    db.DUpdateOrderStatus(order_id, 'delivering', delivery_id)  # 保持 status 為 'delivering'
+    db.DUpdateOrderStatus(order_id, status, delivery_id)  # 保持 status 為 'delivering'
 
     return redirect('/deliveryhome')
 
@@ -615,6 +646,20 @@ def complete_order(order_id):
 
     # 更新訂單狀態為已完成
     db.DUpdateOrderStatus(order_id, status='arrival', delivery_id=delivery_id)
+    
+    # 完成訂單後返回訂單首頁
+    return redirect('/deliveryhome')
+
+@app.route('/order/get/<int:order_id>', methods=['POST'])
+@LoginRequired
+def get_order(order_id):
+    if session.get("role") != "delivery": #判斷是否為外送員
+        return redirect("/login")
+    
+    delivery_id = session.get('role_id')
+
+    # 更新訂單狀態為已完成
+    db.DUpdateOrderStatus(order_id, status='delivering', delivery_id=delivery_id)
     
     # 完成訂單後返回訂單首頁
     return redirect('/deliveryhome')
