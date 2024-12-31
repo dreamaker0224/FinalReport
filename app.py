@@ -69,7 +69,7 @@ def Check():
 # 登出
 @app.route('/logout', methods=['POST'])
 def Logout():
-    session['loginID'] = None
+    session.clear()
     return redirect('/')
 
 # 註冊頁面
@@ -189,7 +189,10 @@ def PAdminDelivery():
 
 # -------------------------------------------------顧客---------------------------------------------------------------------    
 @app.route('/C_商家菜單', methods=['GET'])
+@LoginRequired
 def Cg1():
+    if session.get("role") != "customer": #判斷是否為顧客
+        return redirect("/login")
     store_name = request.args.get('store_name')
     result = db.CGetStoreId(store_name)
     store_id = result['store_id']
@@ -202,7 +205,10 @@ def Cg1():
     return render_template('/C_商家菜單.html', main=main, snacks=snacks, drinks=drinks, data=data,store_id=store_id, menu = menu)
 
 @app.route('/C_訂單確認', methods=['POST'])
+@LoginRequired
 def COrderConfirmation():
+    if session.get("role") != "customer": #判斷是否為顧客
+        return redirect("/login")
     items = request.form
     customer_id = session.get('role_id')
     store_id = session.get('store_id')
@@ -229,7 +235,10 @@ def COrderConfirmation():
     return render_template('C_訂單確認.html', order_details=order_details, data=data, total_amount=total_amount)
 
 @app.route("/C_payaddress", methods=["GET", "POST"])
+@LoginRequired
 def Cg5():
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     customer_id = session.get('customer_id')
     order_id = db.CGetLatestOrderId(customer_id)
     if request.method == "POST":
@@ -251,32 +260,47 @@ def Cg5():
 
 
 @app.route("/C_delete")
+@LoginRequired
 def Cdelete():
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     customer_id = session.get('role_id')
     order_id =db.CGetLatestOrderId(customer_id)
     db.CCancel(order_id)
     return redirect('/')
 
 @app.route("/C_myorder") #我的訂單
+@LoginRequired
 def Cmyorder():
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     customer_id = session.get("role_id")
     data = db.CGetMyOrders(customer_id)
     return render_template('/order.html', orders = data)
 
 @app.route("/C_myorder/<int:order_id>") #我的訂單細節
+@LoginRequired
 def CMyOrderDetails(order_id):
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     customer_id = session.get("role_id")
     order = db.CGetOrders(order_id)
     items = db.CGetOrdersItems(order_id)
     return render_template('/c_order_detail.html', order = order, items = items)
 
 @app.route("/C_feedback/<int:order_id>") #我的訂單細節
+@LoginRequired
 def CFeedback(order_id):
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     order = db.CGetOrders(order_id)
     return render_template('/feedback.html', order = order)
 
 @app.route("/submit_feedback/<int:order_id>", methods=["GET", "POST"])
+@LoginRequired
 def CSubFeed(order_id):
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     form = request.form
     rate = form['rating']
     comment = form['comment']
@@ -288,8 +312,8 @@ def CSubFeed(order_id):
 @app.route('/C_complete/<int:order_id>', methods=['GET'])
 @LoginRequired
 def CCompleteOrder(order_id):
-    if session.get("role") != "customer": #判斷是否為商家
-        return redirect("/")
+    if session.get("role") != "customer": #判斷是否為客戶
+        return redirect("/login")
     db.CCompleteOrder(order_id)
     flash('Order complete successfully!')
     return redirect('/C_myorder')  # gpt 修改: 修正 redirect 路徑
@@ -319,7 +343,7 @@ def CCompleteOrder(order_id):
 @LoginRequired
 def SDashboard():
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     S_id = session.get('role_id')
     orders = db.GetOrdersByStore(S_id)
     return render_template('store_dashboard.html', orders=orders)
@@ -330,7 +354,7 @@ def SDashboard():
 @LoginRequired
 def SMenu():
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     S_id = session.get('role_id')  # gpt 修改: 修正 session key 為 store_id
     items = db.GetMenuItemsByStore(S_id)
     return render_template('store_menu.html', items=items)
@@ -340,7 +364,7 @@ def SMenu():
 @LoginRequired
 def SAddItemPage():
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     if request.method == 'POST':
         S_id = session.get('role_id')  # gpt 生成: 獲取當前店家的 store_id
         form = request.form
@@ -357,7 +381,7 @@ def SAddItemPage():
 @LoginRequired
 def SUpdateItem(item_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     if request.method == 'POST':
         form = request.form
         item_name = form['item_name']
@@ -374,7 +398,7 @@ def SUpdateItem(item_id):
 @LoginRequired
 def SDeleteItem(item_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     db.DeleteMenuItem(item_id)
     flash('Item deleted successfully!')
     return redirect('/S_Menu')  # gpt 修改: 修正 redirect 路徑
@@ -385,7 +409,7 @@ def SDeleteItem(item_id):
 @LoginRequired
 def SOrderDetails(order_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     items = db.GetOrderItems(order_id)
     order = db.GetOrder(order_id)
     total_amount = db.CalculateOrderTotal(order_id)
@@ -396,7 +420,7 @@ def SOrderDetails(order_id):
 @LoginRequired
 def SAcceptOrder(order_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     db.SAcceptOrder(order_id)
     flash('Order accept successfully!')
     return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
@@ -406,7 +430,7 @@ def SAcceptOrder(order_id):
 @LoginRequired
 def SCompleteOrder(order_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     db.SCompleteOrder(order_id)
     flash('Order complete successfully!')
     return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
@@ -418,7 +442,7 @@ def SCompleteOrder(order_id):
 @LoginRequired
 def SSalesReport():
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     store_id = session.get('role_id')
     year = datetime.now().year
     month = datetime.now().month
@@ -431,7 +455,7 @@ def SSalesReport():
 @LoginRequired
 def SUpdateInfo():
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     S_id = session.get('role_id')
     S_info = db.GetStoreInfo(S_id)  # gpt 修改: 修正參數為 S_id
 
@@ -451,7 +475,7 @@ def SUpdateInfo():
 @LoginRequired
 def SDeleteOrder(order_id):
     if session.get("role") != "store": #判斷是否為商家
-        return redirect("/")
+        return redirect("/login")
     db.SCancelledOrder(order_id)
     flash('Order cancelled successfully!')
     return redirect('/S_Dashboard')  # gpt 修改: 修正 redirect 路徑
@@ -476,7 +500,7 @@ def SDeleteOrder(order_id):
 @LoginRequired
 def DeliveryHome():
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     pending_orders = db.GetPendingOrders()  # 待接訂單
     delivery_id = session['loginID']  # 取得外送員 ID
     accepted_orders = db.GetAcceptedOrders(delivery_id)
@@ -487,7 +511,7 @@ def DeliveryHome():
 @LoginRequired
 def PendingDetail(order_id):
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
@@ -516,7 +540,7 @@ def PendingDetail(order_id):
 @LoginRequired
 def AcceptedDetail(order_id):
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
     delivery_id = session.get('delivery_id')
@@ -543,7 +567,7 @@ def AcceptedDetail(order_id):
 @LoginRequired
 def CompletedDetail(order_id):
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     # 獲取訂單資料，包括商品列表、商家資訊和顧客資訊
     order_items, store_info, customer_info = db.GetOrderDetails(order_id)
     order_status = db.GetOrderStatus(order_id)
@@ -572,7 +596,7 @@ def CompletedDetail(order_id):
 @LoginRequired
 def accept_order(order_id):
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     # 確認當前登入的外送員ID是否存在於 session 中
     delivery_id = session.get('role_id')  # 使用 session 中儲存的外送員ID
     
@@ -585,7 +609,7 @@ def accept_order(order_id):
 @LoginRequired
 def complete_order(order_id):
     if session.get("role") != "delivery": #判斷是否為外送員
-        return redirect("/")
+        return redirect("/login")
     
     delivery_id = session.get('role_id')
 
