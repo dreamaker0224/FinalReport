@@ -1,0 +1,98 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid rgb(252, 221, 181);
+    background-color: #fffaf0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.container h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.container label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.container input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid rgb(252, 221, 181);
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.2s;
+}
+
+.container input[type="text"]:focus {
+    border-color: rgb(255, 169, 21);
+    outline: none;
+}
+
+.container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: rgb(255, 169, 21);
+    border: 2px solid rgb(255, 169, 21);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.container button:hover {
+    background-color: rgb(150, 95, 0);
+    border-color: rgb(150, 95, 0);
+}
+
+.container a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    background-color: rgb(255, 169, 21);
+    border: 2px solid rgb(255, 169, 21);
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.container a:hover {
+    background-color: rgb(150, 95, 0);
+    border-color: rgb(150, 95, 0);
+}
+
+.container textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid rgb(252, 221, 181);
+    border-radius: 4px;
+    width: 100%;
+    height: 100px;
+    box-sizing: border-box;
+    background-color: #fff;
+    resize: vertical; /* 允許垂直調整大小 */
+    transition: border-color 0.2s;
+}
+
+.container textarea:focus {
+    border-color: rgb(255, 169, 21);
+    outline: none;
+}

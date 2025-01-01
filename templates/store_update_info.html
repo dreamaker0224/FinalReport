@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>更新店家資訊</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/edit_page.css') }}"/>
 </head>
 <body>
     {% include "navbar.html" %}
-    <div class="update-info-container">
+    <div class="container">
         <h2>更新店家資訊</h2>
         <form action="/S_Update_Info" method="POST"> <!-- gpt 修改: 修正更新店家資訊的路徑 -->
             <label for="store_name">店名</label>

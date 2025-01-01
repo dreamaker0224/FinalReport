@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新增菜品</title>
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/edit_page.css') }}"/>
 </head>
 <body>
     {% include "navbar.html" %}
-    <div class="add-item-container">
+    <div class="container">
         <h2>新增菜品</h2>
         <form action="/S_Add_Item" method="POST"> <!-- gpt 修改: 修正新增菜品的路徑 -->
             <label for="item_name">菜品名稱</label>
