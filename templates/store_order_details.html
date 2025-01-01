@@ -1,54 +1,83 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>訂單詳情</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/store_dash.css') }}">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/store_dash.css') }}"
+    />
+  </head>
+  <body>
     {% include "navbar.html" %}
     <div class="dashboard-container">
-        <div class="back" onClick="history.back()"> &lt; back</div>
-        <h1>訂單詳情 - 訂單 ID: {{ order_id }}</h1>
-        <table class="main-table">
-            <thead>
-                <tr>
-                    <th>菜品名稱</th>
-                    <th>數量</th>
-                    <th>單價</th>
-                    <th>總價</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in items %}
-                <tr>
-                    <td>{{ item.item_name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td style="text-align: right;">${{ item.price }}</td>
-                    <td style="text-align: right;">${{ item.quantity * item.price }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <p class="total-price">總金額: ${{ total_amount }}</p>
-        <form action="/S_Update_Order_status/{{ order_id }}" method="POST"> <!-- gpt 修改: 修正更新訂單狀態的路徑 -->
-            <label for="status"><b>訂單狀態：</b></label>
-            {% if order.status == 'pending' %}
-            代處理
-            <a href="/S_Accept_Order/{{ order.order_id }}" onclick="return confirm('確認接單？')">接單</a>
-            {% elif order.status == 'preparing' %}
-            準備中
-            <a href="/S_Complete_Order/{{ order.order_id }}" onclick="return confirm('確認完成訂單？')">完成訂單</a>
-            {% elif order.status == 'cancelled' %}
-            已取消
-            {% else %}
-            已完成
-            {% endif %}
-            {% if order.status == 'pending' %}
-            <a class="cancelled" href="/S_Cancel_Order/{{ order.order_id }}" onclick="return confirm('確認取消訂單？')">取消訂單</a>                        
-            {% endif %}
-        </form>
+      <div class="back" onClick="history.back()">&lt; back</div>
+      <h1>訂單詳情 - 訂單 ID: {{ order_id }}</h1>
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>菜品名稱</th>
+            <th>數量</th>
+            <th>單價</th>
+            <th>總價</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.item_name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td style="text-align: right">${{ item.price }}</td>
+            <td style="text-align: right">${{ item.quantity * item.price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <p class="total-price">總金額: ${{ total_amount }}</p>
+      <form action="/S_Update_Order_status/{{ order_id }}" method="POST">
+        <!-- gpt 修改: 修正更新訂單狀態的路徑 -->
+        <label for="status"><b>訂單狀態：</b></label>
+        {% if order.status == 'pending' %} 代處理
+        <a
+          href="/S_Accept_Order/{{ order.order_id }}"
+          onclick="return confirm('確認接單？')"
+          >接單</a
+        >
+        {% elif order.status == 'preparing' %} 準備中
+        <a
+          href="/S_Complete_Order/{{ order.order_id }}"
+          onclick="return confirm('確認完成訂單？')"
+          >完成訂單</a
+        >
+        {% elif order.status == 'cancelled' %} 已取消 {% else %} 已完成 {% endif
+        %} {% if order.status == 'pending' %}
+        <a
+          class="cancelled"
+          href="/S_Cancel_Order/{{ order.order_id }}"
+          onclick="return confirm('確認取消訂單？')"
+          >取消訂單</a
+        >
+        {% endif %}
+      </form>
+      {% if order.status == 'completed' or order.status == 'cancelled' %}
+      <div class="section">
+        <h3 style="padding-left: 0;">訂單評價：</h3>
+        {% if feedback %}
+        <ul>
+          {% for review in feedback %}
+          <div>
+            <strong>評分:</strong> {{ review['rating'] }} 分<br />
+            <strong>評價內容:</strong> {{ review['comment'] | default("無留言")
+            }}<br />
+          </div>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p style="text-align:left;">尚無評價。</p>
+        {% endif %}
+      </div>
+      {% endif %}
     </div>
-</body>
+  </body>
 </html>

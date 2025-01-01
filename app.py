@@ -415,8 +415,9 @@ def SOrderDetails(order_id):
         return redirect("/login")
     items = db.GetOrderItems(order_id)
     order = db.GetOrder(order_id)
+    feedback = db.GetFeedbackByOrder(order_id)
     total_amount = db.CalculateOrderTotal(order_id)
-    return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id, order = order)
+    return render_template('store_order_details.html', items=items, total_amount=total_amount, order_id=order_id, order = order, feedback=feedback)
 
 # 接單
 @app.route('/S_Accept_Order/<int:order_id>', methods=['GET'])
