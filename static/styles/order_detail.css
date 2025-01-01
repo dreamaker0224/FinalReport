@@ -1,0 +1,114 @@
+.order-detail {
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+}
+
+.order-detail h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}
+
+.order-detail h3 {
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.order-detail p {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.order-detail a {
+    display: inline-block;
+    margin-top: 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    background-color: rgb(255, 169, 21);
+    border: 2px solid rgb(255, 169, 21);
+    border-radius: 4px;
+    text-align: center;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.order-detail a:hover {
+    background-color: rgb(150, 95, 0);
+    border-color: rgb(150, 95, 0);
+}
+
+.order-detail div {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid rgb(252, 221, 181);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order-detail table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.order-detail table th, .order-detail table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid rgb(252, 221, 181);
+}
+
+.order-detail table th {
+    background-color: antiquewhite;
+    color: #333;
+    font-weight: bold;
+}
+
+.order-detail table td {
+    background-color: #fffaf0;
+}
+
+
+.order-detail .back{
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    transition: .3s;
+}
+
+.order-detail .back:hover{
+    color: gray;
+    cursor: pointer;
+}
+
+.container div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.container select {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid rgb(252, 221, 181);
+    border-radius: 4px;
+    width: 100%;
+    background-color: #fff;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.container select:focus {
+    border-color: rgb(255, 169, 21);
+    outline: none;
+}

@@ -16,7 +16,13 @@
     padding: 10px;
     background-color: antiquewhite;
     border: 1px solid rgb(252, 221, 181);
-
+}
+.order-container .main-table tr{
+    transition: .3s;
+    cursor: pointer;
+}
+.order-container .main-table tr:hover {
+    background-color: rgb(190, 190, 190);
 }
 .order-container .main-table td{
     padding: 10px 20px;

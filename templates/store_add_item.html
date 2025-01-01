@@ -10,7 +10,7 @@
     {% include "navbar.html" %}
     <div class="container">
         <h2>新增菜品</h2>
-        <form action="/S_Add_Item" method="POST"> <!-- gpt 修改: 修正新增菜品的路徑 -->
+        <form action="/S_Add_Item" method="POST">
             <label for="item_name">菜品名稱</label>
             <input type="text" id="item_name" name="item_name" required>
             
@@ -22,7 +22,7 @@
             
             <button type="submit">新增菜品</button>
         </form>
-        <a href="/S_Menu">回到菜單管理</a> <!-- gpt 修改: 修正返回菜單管理的路徑 -->
+        <a href="/S_Menu">回到菜單管理</a>
     </div>
 </body>
 </html>

@@ -2,9 +2,15 @@
 <html>
   <head>
     <title>訂單詳細資料</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='/styles/order_detail.css') }}"
+    />
   </head>
   <body>
     {% include "navbar.html" %}
+    <section class="order-detail">
+      <span class="back" onClick="history.back()">&lt; back</span>
     <h1>訂單 #{{ order.order_id }} - {{ order.store_name }}</h1>
 
     <div>
@@ -61,7 +67,6 @@
       {% endif %}
     </div>
     {% endif %}
-
-    <a href="/C_myorder">返回</a>
+  </section>
   </body>
 </html>

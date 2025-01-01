@@ -5,13 +5,13 @@
     <title>訂單列表</title>
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='/styles/admin.css') }}"
+      href="{{ url_for('static', filename='/styles/delivery.css') }}"
     />
   </head>
   <body>
     <!-- 引入已經存在的 navbar.html -->
     {% include 'navbar.html' %}
-
+    <section class="container">
     <h1>外送訂單列表</h1>
 
     <!-- 未接單的訂單列表 -->
@@ -24,7 +24,7 @@
         >
       </li>
       {% else %}
-      <li>目前沒有待接訂單</li>
+      <li class="completed">目前沒有待接訂單</li>
       {% endfor %}
     </ul>
 
@@ -39,7 +39,7 @@
         >
       </li>
       {% else %}
-      <li>目前沒有已接但未完成訂單</li>
+      <li class="completed">目前沒有已接但未完成訂單</li>
       {% endfor %}
     </ul>
 
@@ -54,7 +54,7 @@
         >
       </li>
       {% else %}
-      <li>目前沒有已接訂單</li>
+      <li class="completed">目前沒有已接訂單</li>
       {% endfor %}
     </ul>
 
@@ -69,8 +69,9 @@
         >
       </li>
       {% else %}
-      <li>目前沒有被取消訂單</li>
+      <li class="completed">目前沒有被取消訂單</li>
       {% endfor %}
     </ul>
+  </section>
   </body>
 </html>

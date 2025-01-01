@@ -3,10 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/edit_page.css') }}"/>
     <title>給予評價</title>
   </head>
   <body>
     {% include "navbar.html" %}
+    <section class="container">
     <h1>給予訂單 #{{ order.order_id }} 評價</h1>
 
     <form action="/submit_feedback/{{ order.order_id }}" method="POST">
@@ -39,5 +41,6 @@
     </form>
 
     <a href="/C_myorder">返回訂單列表</a>
+    </section>
   </body>
 </html>

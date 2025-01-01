@@ -107,14 +107,8 @@ def Registing():
 # 首頁
 @app.route('/')
 def Home():
-    dat = db.GetAllStores()
-    # -------------------------------------------------顧客---------------------------------------------------------------------   
-    name = session.get('name')
-    customer_id = session.get('role_id')
-    order_id =db.CGetLatestOrderId(customer_id)
-    db.DeleteUnpaidOrders(customer_id)
-# -------------------------------------------------顧客---------------------------------------------------------------------   
-    return render_template('index.html', name=name,customer_id=customer_id, stores = dat)   
+    dat = db.GetAllStores()   
+    return render_template('index.html', stores = dat)   
 
 # 搜尋功能
 @app.route('/search', methods=['GET'])

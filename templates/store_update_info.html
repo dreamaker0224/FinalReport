@@ -10,7 +10,7 @@
     {% include "navbar.html" %}
     <div class="container">
         <h2>更新店家資訊</h2>
-        <form action="/S_Update_Info" method="POST"> <!-- gpt 修改: 修正更新店家資訊的路徑 -->
+        <form action="/S_Update_Info" method="POST">
             <label for="store_name">店名</label>
             <input type="text" id="store_name" name="store_name" value="{{ store_info.store_name }}" required>
             
@@ -22,7 +22,6 @@
             
             <button type="submit">更新資料</button>
         </form>
-        <a href="/S_Dashboard">回到儀表板</a> <!-- gpt 修改: 修正返回儀表板的路徑 -->
     </div>
 </body>
 </html>
