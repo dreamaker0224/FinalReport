@@ -12,6 +12,7 @@
         <h1>{{ store_name }} 店家儀表板</h1>
         <p>歡迎來到你的儀表板</p>
 
+        <!-- 目前訂單 -->
         <h3>訂單管理</h3>
         <table class="main-table">
             <thead>
@@ -25,7 +26,46 @@
                 </tr>
             </thead>
             <tbody>
-                {% for order in orders %}
+                {% for order in orders if order.status != "completed" and order.status != "cancelled" %}
+                <tr>
+                    <td>{{ order.order_id }}</td>
+                    <td>{{ order.customer_id }}</td>
+                    <td>{{ order.created_at }}</td>
+                    <td>${{ order.total_price }}</td>
+                    <td>{{ order.status }}</td>
+                    <td style="width:300px">
+                        <a href="/Store_Order_Details/{{ order.order_id }}">查看</a> 
+                        {% if order.status == 'pending' %}
+                        <a href="/S_Accept_Order/{{ order.order_id }}" onclick="return confirm('確認接單？')">接單</a>
+                        {% elif order.status == 'preparing' %}
+                        <a href="/S_Complete_Order/{{ order.order_id }}" onclick="return confirm('確認完成訂單？')">完成訂單</a>
+                        {% endif %}
+                        
+                        {% if order.status == 'pending' %}
+                        <a href="/S_Cancel_Order/{{ order.order_id }}" onclick="return confirm('確認取消訂單？')">取消訂單</a>                        
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+        <!-- 歷史訂單 -->
+        <h3>歷史訂單</h3>
+        <table class="main-table">
+            <thead>
+                <tr>
+                    <th>訂單ID</th>
+                    <th>顧客ID</th>
+                    <th>訂單時間</th>
+                    <th>總金額</th>
+                    <th>狀態</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders if order.status == "completed" or order.status == "cancelled" %}
                 <tr>
                     <td>{{ order.order_id }}</td>
                     <td>{{ order.customer_id }}</td>

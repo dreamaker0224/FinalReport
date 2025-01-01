@@ -461,7 +461,7 @@ def DeleteMenuItem(item_id):
 # -------------------------------------------------訂單---------------------------------------------------------------------
 # Get all orders for a store
 def GetOrdersByStore(store_id):
-    sql = "SELECT order_id, customer_id, created_at, total_price, status FROM orders WHERE store_id = %s;"
+    sql = "SELECT order_id, customer_id, created_at, total_price, status FROM orders WHERE store_id = %s ORDER BY order_id DESC;"
     cursor.execute(sql, (store_id,))
     return cursor.fetchall()
 
