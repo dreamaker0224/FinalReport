@@ -11,62 +11,65 @@
     {% include "navbar.html" %}
     <section class="order-detail">
       <span class="back" onClick="history.back()">&lt; back</span>
-    <h1>訂單 #{{ order.order_id }} - {{ order.store_name }}</h1>
+      <h1>訂單 #{{ order.order_id }} - {{ order.store_name }}</h1>
 
-    <div>
-      <h3>商家資訊</h3>
-      <p>商家地址：{{ order.store_address }}</p>
-    </div>
+      <div>
+        <h3>商家資訊</h3>
+        <p>商家地址：{{ order.store_address }}</p>
+      </div>
 
-    <div>
-      <h3>訂單項目</h3>
-      <table border="1" cellpadding="5" cellspacing="0">
-        <tr>
-          <th>項目名稱</th>
-          <th>數量</th>
-          <th>項目金額</th>
-        </tr>
-        {% for item in items %}
-        <tr>
-          <td>{{ item['item_name'] }}</td>
-          <td>{{ item['quantity'] }}</td>
-          <td>${{ item['price'] }}</td>
-        </tr>
-        {% endfor %}
-      </table>
-    </div>
+      <div>
+        <h3>訂單項目</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <tr>
+            <th>項目名稱</th>
+            <th>數量</th>
+            <th>項目金額</th>
+          </tr>
+          {% for item in items %}
+          <tr>
+            <td>{{ item['item_name'] }}</td>
+            <td>{{ item['quantity'] }}</td>
+            <td>${{ item['price'] }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
 
-    <div>
-      <h3>訂單摘要</h3>
-      <p>總項目數量：{{ order.total_quantity }}</p>
-      <p>總金額：${{ order.total_price }}</p>
-    </div>
+      <div>
+        <h3>訂單摘要</h3>
+        <p>總項目數量：{{ order.total_quantity }}</p>
+        <p>總金額：${{ order.total_price }}</p>
+      </div>
 
-    {% if order.status == 'waiting' %}
-    <div>
-      <h3>訂單狀態</h3>
-      <p>目前狀態：等待商家處理中。</p>
-    </div>
-    {% elif order.status == 'in_progress' %}
-    <div>
-      <h3>訂單狀態</h3>
-      <p>目前狀態：訂單正在配送中。</p>
-    </div>
-    {% elif order.status == 'completed' %}
-    <div>
-      <h3>訂單狀態</h3>
-      <p>目前狀態：訂單已完成。</p>
-    </div>
-    <div>
-      <h3>訂單評價</h3>
-      {% if order.review_id %}
-      <p>已給予評價</p>
-      {% else %}
-      <p>尚無評價。</p>
-      <a href="/C_feedback/{{ order.order_id }}">給予評價</a>
+      {% if order.status == 'waiting' %}
+      <div>
+        <h3>訂單狀態</h3>
+        <p>目前狀態：等待商家處理中。</p>
+      </div>
+      {% elif order.status == 'in_progress' %}
+      <div>
+        <h3>訂單狀態</h3>
+        <p>目前狀態：訂單正在配送中。</p>
+      </div>
+      {% elif order.status == 'completed' %}
+      <div>
+        <h3>訂單狀態</h3>
+        <p>目前狀態：訂單已完成。</p>
+      </div>
       {% endif %}
-    </div>
-    {% endif %}
-  </section>
+      <div>
+        <h3>訂單評價</h3>
+        {% if feedback %}
+        <p>已給予評價</p>
+        <p><b>星級：</b>{{ feedback.rating }}</p>
+        <p><b>Comment：</b></p>
+        <p>{{ feedback.comment }}</p>
+        {% else %}
+        <p>尚無評價。</p>
+        <a href="/C_feedback/{{ order.order_id }}">給予評價</a>
+        {% endif %}
+      </div>
+    </section>
   </body>
 </html>

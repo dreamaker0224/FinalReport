@@ -283,7 +283,8 @@ def CMyOrderDetails(order_id):
     customer_id = session.get("role_id")
     order = db.CGetOrders(order_id)
     items = db.CGetOrdersItems(order_id)
-    return render_template('/c_order_detail.html', order = order, items = items)
+    feedback = db.GetFeedbackByOrder(order_id)
+    return render_template('/c_order_detail.html', order = order, items = items, feedback = feedback)
 
 @app.route("/C_feedback/<int:order_id>") #我的訂單細節
 @LoginRequired

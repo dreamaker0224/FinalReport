@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2025-01-02 12:21:47
+-- 產生時間： 2025-01-02 13:25:53
 -- 伺服器版本： 10.4.28-MariaDB
 -- PHP 版本： 8.2.4
 
@@ -82,7 +82,8 @@ CREATE TABLE `feedback` (
 INSERT INTO `feedback` (`review_id`, `order_id`, `customer_id`, `rating`, `comment`, `created_at`) VALUES
 (1, 13, 1, 1, 'asdfsa', '2024-12-30 20:37:05'),
 (3, 23, 1, 3, '12132\r\n', '2024-12-31 16:19:17'),
-(4, 24, 1, 5, '好吃', '2025-01-01 02:32:01');
+(4, 24, 1, 5, '好吃', '2025-01-01 02:32:01'),
+(5, 36, 1, 5, '好吃', '2025-01-02 20:06:05');
 
 -- --------------------------------------------------------
 
@@ -139,10 +140,11 @@ INSERT INTO `orders` (`order_id`, `customer_id`, `store_id`, `delivery_id`, `tot
 (28, 1, 1, 1, 130.00, 'cancelled', '2025-01-01 00:43:03', '2025-01-01 00:44:29'),
 (30, 1, 1, 1, 133.00, 'completed', '2025-01-01 01:03:22', '2025-01-01 01:09:46'),
 (31, 1, 1, NULL, 130.00, 'cancelled', '2025-01-01 01:54:35', '0000-00-00 00:00:00'),
-(32, 1, 1, 1, 123.00, 'pending', '2025-01-01 01:59:56', '2025-01-01 17:29:40'),
-(33, 1, 1, NULL, 120.00, 'pending', '2025-01-01 02:01:30', '0000-00-00 00:00:00'),
-(34, 1, 1, NULL, 10.00, 'pending', '2025-01-01 02:10:31', '0000-00-00 00:00:00'),
-(35, 1, 1, NULL, 120.00, 'cancelled', '2025-01-01 16:21:01', '0000-00-00 00:00:00');
+(32, 1, 1, 1, 123.00, 'cancelled', '2025-01-01 01:59:56', '2025-01-01 17:29:40'),
+(33, 1, 1, 1, 120.00, 'cancelled', '2025-01-01 02:01:30', '2025-01-02 19:43:42'),
+(34, 1, 1, 1, 10.00, 'cancelled', '2025-01-01 02:10:31', '2025-01-02 19:43:45'),
+(35, 1, 1, NULL, 120.00, 'cancelled', '2025-01-01 16:21:01', '0000-00-00 00:00:00'),
+(36, 1, 1, 1, 376.00, 'completed', '2025-01-02 20:03:58', '2025-01-02 20:05:41');
 
 -- --------------------------------------------------------
 
@@ -195,7 +197,10 @@ INSERT INTO `order_items` (`order_item_id`, `order_id`, `item_id`, `quantity`, `
 (57, 32, 4, 1, 123.00),
 (58, 33, 2, 1, 120.00),
 (59, 34, 3, 1, 10.00),
-(60, 35, 2, 1, 120.00);
+(60, 35, 2, 1, 120.00),
+(61, 36, 2, 1, 120.00),
+(62, 36, 3, 1, 10.00),
+(63, 36, 4, 2, 123.00);
 
 -- --------------------------------------------------------
 
@@ -218,21 +223,6 @@ CREATE TABLE `stores` (
 INSERT INTO `stores` (`store_id`, `user_id`, `store_name`, `address`, `phone_number`) VALUES
 (1, 3, 'stest', 'adsad', 'asds'),
 (3, 8, 'stest2', NULL, NULL);
-
--- --------------------------------------------------------
-
---
--- 資料表結構 `transactions`
---
-
-CREATE TABLE `transactions` (
-  `transaction_id` int(11) NOT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `store_amount` decimal(10,2) NOT NULL,
-  `delivery_amount` decimal(10,2) NOT NULL,
-  `customer_amount` decimal(10,2) NOT NULL,
-  `created_at` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -318,13 +308,6 @@ ALTER TABLE `stores`
   ADD KEY `user_id` (`user_id`);
 
 --
--- 資料表索引 `transactions`
---
-ALTER TABLE `transactions`
-  ADD PRIMARY KEY (`transaction_id`),
-  ADD KEY `order_id` (`order_id`);
-
---
 -- 資料表索引 `users`
 --
 ALTER TABLE `users`
@@ -351,7 +334,7 @@ ALTER TABLE `delivery_personnel`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `menu_items`
@@ -363,13 +346,13 @@ ALTER TABLE `menu_items`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `stores`
@@ -378,16 +361,10 @@ ALTER TABLE `stores`
   MODIFY `store_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- 使用資料表自動遞增(AUTO_INCREMENT) `transactions`
---
-ALTER TABLE `transactions`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- 使用資料表自動遞增(AUTO_INCREMENT) `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
