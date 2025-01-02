@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： 127.0.0.1
--- 產生時間： 2024-12-23 10:23:54
+-- 產生時間： 2025-01-02 12:21:47
 -- 伺服器版本： 10.4.28-MariaDB
 -- PHP 版本： 8.2.4
 
@@ -39,7 +39,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `user_id`, `address`, `phone_number`) VALUES
-(1, 2, 'adsfas', '095362461');
+(1, 2, 'adsfas', '093213151');
 
 -- --------------------------------------------------------
 
@@ -70,12 +70,19 @@ CREATE TABLE `feedback` (
   `review_id` int(11) NOT NULL,
   `order_id` int(11) DEFAULT NULL,
   `customer_id` int(11) DEFAULT NULL,
-  `target_id` int(11) DEFAULT NULL,
-  `target_role` enum('store','delivery_personnel') NOT NULL,
   `rating` int(11) DEFAULT NULL CHECK (`rating` between 1 and 5),
   `comment` text DEFAULT NULL,
   `created_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- 傾印資料表的資料 `feedback`
+--
+
+INSERT INTO `feedback` (`review_id`, `order_id`, `customer_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 13, 1, 1, 'asdfsa', '2024-12-30 20:37:05'),
+(3, 23, 1, 3, '12132\r\n', '2024-12-31 16:19:17'),
+(4, 24, 1, 5, '好吃', '2025-01-01 02:32:01');
 
 -- --------------------------------------------------------
 
@@ -98,7 +105,9 @@ CREATE TABLE `menu_items` (
 --
 
 INSERT INTO `menu_items` (`item_id`, `store_id`, `item_name`, `price`, `description`, `status`, `img`) VALUES
-(1, 1, '炸機', 100.00, '好吃炸機', 'available', '');
+(2, 1, '雞腿', 120.00, '好吃雞腿', 'available', NULL),
+(3, 1, '雞翅', 10.00, '難吃雞翅\r\n', 'available', NULL),
+(4, 1, '123', 123.00, '123', 'available', NULL);
 
 -- --------------------------------------------------------
 
@@ -112,7 +121,7 @@ CREATE TABLE `orders` (
   `store_id` int(11) DEFAULT NULL,
   `delivery_id` int(11) DEFAULT NULL,
   `total_price` decimal(10,2) NOT NULL,
-  `status` enum('waiting','completed','cancelled') NOT NULL,
+  `status` enum('pending','preparing','waiting','delivering','arrival','completed','cancelled') NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -122,7 +131,18 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `customer_id`, `store_id`, `delivery_id`, `total_price`, `status`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, NULL, 0.00, 'waiting', '2024-12-20 07:25:33', '2024-12-20 07:25:33');
+(13, 1, 1, 1, 253.00, 'cancelled', '2024-12-30 17:56:14', '2024-12-30 18:19:43'),
+(23, 1, 1, NULL, 240.00, 'cancelled', '2024-12-31 14:54:24', '0000-00-00 00:00:00'),
+(24, 1, 1, 1, 506.00, 'completed', '2024-12-31 15:12:24', '2025-01-01 00:42:23'),
+(25, 1, 1, 1, 12150.00, 'completed', '2024-12-31 18:58:02', '2024-12-31 20:35:43'),
+(26, 1, 1, 1, 120.00, 'completed', '2024-12-31 19:46:19', '2024-12-31 20:38:09'),
+(28, 1, 1, 1, 130.00, 'cancelled', '2025-01-01 00:43:03', '2025-01-01 00:44:29'),
+(30, 1, 1, 1, 133.00, 'completed', '2025-01-01 01:03:22', '2025-01-01 01:09:46'),
+(31, 1, 1, NULL, 130.00, 'cancelled', '2025-01-01 01:54:35', '0000-00-00 00:00:00'),
+(32, 1, 1, 1, 123.00, 'pending', '2025-01-01 01:59:56', '2025-01-01 17:29:40'),
+(33, 1, 1, NULL, 120.00, 'pending', '2025-01-01 02:01:30', '0000-00-00 00:00:00'),
+(34, 1, 1, NULL, 10.00, 'pending', '2025-01-01 02:10:31', '0000-00-00 00:00:00'),
+(35, 1, 1, NULL, 120.00, 'cancelled', '2025-01-01 16:21:01', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -143,7 +163,39 @@ CREATE TABLE `order_items` (
 --
 
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `item_id`, `quantity`, `price`) VALUES
-(1, 1, 1, 1, 100.00);
+(28, 13, 2, 1, 120.00),
+(29, 13, 3, 1, 10.00),
+(30, 13, 4, 1, 123.00),
+(31, 14, 2, 2, 120.00),
+(32, 14, 4, 1, 123.00),
+(33, 15, 4, 2, 123.00),
+(34, 16, 2, 1, 120.00),
+(35, 16, 4, 1, 123.00),
+(36, 17, 2, 1, 120.00),
+(37, 18, 3, 1, 10.00),
+(38, 19, 2, 1, 120.00),
+(39, 20, 3, 1, 10.00),
+(40, 21, 3, 1, 10.00),
+(41, 22, 3, 1, 10.00),
+(42, 23, 2, 2, 120.00),
+(43, 24, 2, 2, 120.00),
+(44, 24, 3, 2, 10.00),
+(45, 24, 4, 2, 123.00),
+(46, 25, 2, 50, 120.00),
+(47, 25, 4, 50, 123.00),
+(48, 26, 2, 1, 120.00),
+(49, NULL, 3, 1, 10.00),
+(50, 28, 2, 1, 120.00),
+(51, 28, 3, 1, 10.00),
+(52, 29, 2, 1, 120.00),
+(53, 30, 3, 1, 10.00),
+(54, 30, 4, 1, 123.00),
+(55, 31, 2, 1, 120.00),
+(56, 31, 3, 1, 10.00),
+(57, 32, 4, 1, 123.00),
+(58, 33, 2, 1, 120.00),
+(59, 34, 3, 1, 10.00),
+(60, 35, 2, 1, 120.00);
 
 -- --------------------------------------------------------
 
@@ -164,7 +216,8 @@ CREATE TABLE `stores` (
 --
 
 INSERT INTO `stores` (`store_id`, `user_id`, `store_name`, `address`, `phone_number`) VALUES
-(1, 3, 'stest', 'lasdfj;sladfj;l', '091234567');
+(1, 3, 'stest', 'adsad', 'asds'),
+(3, 8, 'stest2', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -192,7 +245,7 @@ CREATE TABLE `users` (
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('customer','store','delivery_personnel','platform') NOT NULL
+  `role` enum('customer','store','delivery','platform') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -200,10 +253,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `name`, `email`, `password`, `role`) VALUES
-(1, 'dtest', 'dtest@dtest', 'dtest', 'delivery_personnel'),
+(1, 'dtest', 'dtest@dtest', 'dtest', 'delivery'),
 (2, 'ctest', 'ctest@ctest', 'ctest', 'customer'),
 (3, 'stest', 'stest@stest', 'stest', 'store'),
-(4, 'ptest', 'ptest@ptest', 'ptest', 'platform');
+(4, 'ptest', 'ptest@ptest', 'ptest', 'platform'),
+(5, 'ctest2', 'ctest2@ctest2', 'ctest2', 'customer'),
+(8, 'stest2', 'stest2@stest2', 'stest2', 'store');
 
 --
 -- 已傾印資料表的索引
@@ -296,31 +351,31 @@ ALTER TABLE `delivery_personnel`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `feedback`
 --
 ALTER TABLE `feedback`
-  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `review_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `menu_items`
 --
 ALTER TABLE `menu_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `stores`
 --
 ALTER TABLE `stores`
-  MODIFY `store_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `store_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- 使用資料表自動遞增(AUTO_INCREMENT) `transactions`
@@ -332,7 +387,7 @@ ALTER TABLE `transactions`
 -- 使用資料表自動遞增(AUTO_INCREMENT) `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
