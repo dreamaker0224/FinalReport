@@ -89,15 +89,6 @@ erDiagram
         datetime created_at
     }
 
-    transactions {
-        int transaction_id PK
-        int order_id FK
-        decimal store_amount
-        decimal delivery_amount
-        decimal customer_amount
-        datetime created_at
-    }
-
     users ||--o{ customers : "has"
     users ||--o{ delivery_personnel : "has"
     users ||--o{ stores : "owns"
@@ -107,7 +98,6 @@ erDiagram
     delivery_personnel ||--o{ orders : "delivers"
     orders ||--o{ order_items : "contains"
     orders ||--o{ feedback : "gets"
-    orders ||--o{ transactions : "has"
     menu_items ||--o{ order_items : "includes"
 
 
